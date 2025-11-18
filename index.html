@@ -9,17 +9,15 @@
         @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
         body {
-            background-color: #000000;
-            color: #00FF41;
-            font-family: 'VT323', monospace;
+            background-color: #000000; /* Nyeusi */
+            color: #00FF41; /* Kijani cha Matrix */
+            font-family: 'VT323', monospace; /* Font ya kipekee */
             margin: 0;
-            padding: 0;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
         }
-        
         h1 {
             color: #33FF33;
             text-shadow: 0 0 10px #00FF41;
@@ -27,90 +25,97 @@
             padding-bottom: 10px;
             margin-bottom: 20px;
             font-size: 2.5em;
-            text-align: center;
-            width: 100%;
         }
-        
         #chat-container {
-            width: 95%;
+            width: 90%;
             max-width: 800px;
             background-color: #0A0A0A;
             border: 2px solid #00FF41;
             box-shadow: 0 0 20px #00FF41;
             padding: 15px;
-            display: flex;
-            flex-direction: column;
-            height: 90vh;
-            margin-top: 10px;
+            position: relative; /* Kwa ajili ya Online Users Submenu */
+        }
+
+        /* Online Users Submenu */
+        #online-users-box {
+            position: absolute;
+            top: 20px;
+            right: -250px; /* Weka nje ya chat box */
+            width: 230px;
+            padding: 10px;
+            background-color: #0A0A0A;
+            border: 1px solid #00FF41;
+            box-shadow: 0 0 10px #00FF41;
+        }
+        #online-users-box h3 {
+            margin-top: 0;
+            color: #33FF33;
+            border-bottom: 1px dashed #008800;
+            padding-bottom: 5px;
+        }
+        #onlineUsersList {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 1.1em;
+        }
+        #onlineUsersList li {
+            padding: 2px 0;
+            color: #00FF41;
+        }
+        .owner-online { /* Rangi ya Owner kwenye list */
+            color: #FF3333 !important; 
+            font-weight: bold;
         }
 
         /* Box ya Ujumbe Uliotunzwa */
         #messages {
-            flex-grow: 1;
-            overflow-y: auto;
+            height: 400px;
+            overflow-y: scroll;
             margin-bottom: 15px;
             padding: 10px;
             border: 1px dashed #008800;
-            display: flex;
-            flex-direction: column;
         }
 
         /* Muonekano wa Ujumbe Mmoja */
         .message {
             margin-bottom: 8px;
             word-wrap: break-word;
-            padding: 5px 0;
         }
         
+        /* Rangi ya Kawaida ya Jina */
         .username {
             color: #FFFFFF;
             font-weight: bold;
             text-shadow: 0 0 5px #FFFFFF;
         }
         
+        /* Rangi ya Jina la Owner (Mgeni) */
+        .owner-message .username {
+            color: #FF3333; /* Rangi Mpya kwa Owner */
+            text-shadow: 0 0 8px #FF3333;
+            font-size: 1.1em;
+        }
+
         .timestamp {
             font-size: 0.8em;
             color: #008800;
             margin-right: 5px;
         }
-        
-        /* Muonekano wa user aliye-tag */
-        .mention {
-            color: #FF9900;
-            font-weight: bold;
-            text-shadow: 0 0 5px #FF9900;
-            background-color: rgba(255, 153, 0, 0.1);
-            padding: 1px 4px;
-            border-radius: 3px;
-        }
-        
-        /* Muonekano wa ujumbe ulio na mention */
-        .mentioned {
-            border-left: 3px solid #FF9900;
-            padding-left: 5px;
-            background-color: rgba(255, 153, 0, 0.05);
-        }
 
-        /* Sehemu ya Kuandika Ujumbe */
-        #messageForm {
-            display: flex;
-            position: relative;
-            gap: 10px;
-        }
-        
+        /* Sehemu ya Kuandika Ujumbe (Input/Button) */
         #messageInput {
             flex-grow: 1;
-            padding: 12px;
-            border: 1px solid #00FF41;
+            padding: 10px;
+            border: none;
             background-color: #000000;
             color: #00FF41;
             font-family: 'VT323', monospace;
             font-size: 1.2em;
-            border-radius: 4px;
+            border-bottom: 1px solid #00FF41;
         }
-        
         #messageForm button {
-            padding: 12px 20px;
+            padding: 10px 20px;
             background-color: #008800;
             color: #000000;
             border: none;
@@ -118,168 +123,17 @@
             font-family: 'VT323', monospace;
             font-size: 1.2em;
             transition: background-color 0.3s;
-            border-radius: 4px;
-            font-weight: bold;
         }
-        
-        #messageForm button:hover {
-            background-color: #00FF41;
-            box-shadow: 0 0 10px #00FF41;
-        }
-        
-        /* Box ya Kujaza Jina */
+        /* (CSS kwa Username Prompt imebaki kama zamani) */
         #username-prompt {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95); display: flex;
+            justify-content: center; align-items: center; z-index: 1000;
             flex-direction: column;
         }
-        
         #username-prompt input, #username-prompt button {
-            padding: 15px;
-            margin: 10px;
-            font-size: 1.5em;
-            background-color: #0A0A0A;
-            color: #00FF41;
-            border: 1px solid #00FF41;
-            font-family: 'VT323', monospace;
-            border-radius: 4px;
-            width: 80%;
-            max-width: 400px;
-        }
-        
-        #username-prompt button {
-            background-color: #008800;
-            color: #000000;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        
-        #username-prompt button:hover {
-            background-color: #00FF41;
-        }
-
-        /* Autocomplete ya user tagging */
-        #userSuggestions {
-            position: absolute;
-            bottom: 100%;
-            left: 0;
-            width: 100%;
-            background-color: #0A0A0A;
-            border: 1px solid #00FF41;
-            border-bottom: none;
-            max-height: 150px;
-            overflow-y: auto;
-            display: none;
-            z-index: 10;
-            border-radius: 4px 4px 0 0;
-        }
-        
-        .userSuggestion {
-            padding: 8px 10px;
-            cursor: pointer;
-            border-bottom: 1px solid #008800;
-        }
-        
-        .userSuggestion:hover {
-            background-color: #008800;
-            color: #000000;
-        }
-        
-        /* Notification ya mention */
-        #mentionNotification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #FF9900;
-            color: #000000;
-            padding: 10px 15px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px #FF9900;
-            display: none;
-            z-index: 1001;
-            font-weight: bold;
-        }
-        
-        /* Online users panel */
-        #onlineUsers {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background-color: #0A0A0A;
-            border: 1px solid #00FF41;
-            padding: 10px;
-            max-width: 200px;
-            max-height: 300px;
-            overflow-y: auto;
-            display: none;
-            border-radius: 4px;
-            box-shadow: 0 0 10px #00FF41;
-        }
-        
-        #onlineUsers h3 {
-            margin-top: 0;
-            border-bottom: 1px solid #00FF41;
-            padding-bottom: 5px;
-            text-align: center;
-        }
-        
-        .onlineUser {
-            padding: 5px;
-            margin-bottom: 5px;
-            border-bottom: 1px dashed #008800;
-            cursor: pointer;
-        }
-        
-        .onlineUser:hover {
-            background-color: #008800;
-            color: #000000;
-        }
-        
-        /* Toggle button for online users */
-        #toggleUsersBtn {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background-color: #008800;
-            color: #000000;
-            border: none;
-            padding: 8px 15px;
-            cursor: pointer;
-            font-family: 'VT323', monospace;
-            z-index: 100;
-            border-radius: 4px;
-            font-weight: bold;
-        }
-        
-        #toggleUsersBtn:hover {
-            background-color: #00FF41;
-            box-shadow: 0 0 10px #00FF41;
-        }
-        
-        /* Scrollbar customization */
-        #messages::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        #messages::-webkit-scrollbar-track {
-            background: #0A0A0A;
-        }
-        
-        #messages::-webkit-scrollbar-thumb {
-            background: #008800;
-            border-radius: 4px;
-        }
-        
-        #messages::-webkit-scrollbar-thumb:hover {
-            background: #00FF41;
+            padding: 15px; margin: 10px; font-size: 1.5em; background-color: #0A0A0A;
+            color: #00FF41; border: 1px solid #00FF41; font-family: 'VT323', monospace;
         }
     </style>
 </head>
@@ -291,18 +145,19 @@
         <button id="setUsernameButton">ENTER SYSTEM</button>
     </div>
 
-    <button id="toggleUsersBtn">USERS ONLINE</button>
-    <div id="onlineUsers"></div>
-    
-    <div id="mentionNotification"></div>
-
     <div id="chat-container" style="display:none;">
         <h1>DarkX Official: Secret Chatting Box</h1>
+
+        <div id="online-users-box">
+            <h3>AGENTS ONLINE <span id="onlineUsersCount">(0)</span></h3>
+            <ul id="onlineUsersList">
+                </ul>
+        </div>
         
-        <div id="messages"></div>
+        <div id="messages">
+            </div>
 
         <form id="messageForm">
-            <div id="userSuggestions"></div>
             <input type="text" id="messageInput" placeholder=">> SEND SIGNAL..." required>
             <button type="submit">TRANSMIT</button>
         </form>
@@ -316,23 +171,23 @@
         // !!! MUHIMU: BADILISHA HAPA KWA MIPANGILIO YAKO HALISI YA FIREBASE !!!
         // =========================================================================
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
+            apiKey: "YOUR_API_KEY", // Pata hii kutoka kwa mipangilio ya mradi
             authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
             databaseURL: "https://darkweb-chat-c0c51-default-rtdb.firebaseio.com", 
             projectId: "darkweb-chat-c0c51",
             // Weka data nyingine kama zipo
         };
         // =========================================================================
+        
+        // Jina la Owner (Hili jina litakuwa na rangi tofauti kwenye chat)
+        const OWNER_USERNAME = "DarkX_Admin"; 
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-        const messagesRef = database.ref('messages');
-        const usersRef = database.ref('users'); // Realtime database for online users
-
+        const messagesRef = database.ref('messages'); // Rejea kwa ajili ya ujumbe
+        
         let currentUsername = '';
-        let onlineUsers = {}; // Store online users
-        let userSuggestions = []; // Store user suggestions for autocomplete
 
         // Marejeo ya HTML Elements
         const usernamePrompt = document.getElementById('username-prompt');
@@ -342,44 +197,71 @@
         const messageForm = document.getElementById('messageForm');
         const messageInput = document.getElementById('messageInput');
         const messagesContainer = document.getElementById('messages');
-        const userSuggestionsContainer = document.getElementById('userSuggestions');
-        const mentionNotification = document.getElementById('mentionNotification');
-        const onlineUsersContainer = document.getElementById('onlineUsers');
-        const toggleUsersBtn = document.getElementById('toggleUsersBtn');
+        const onlineUsersList = document.getElementById('onlineUsersList');
+        const onlineUsersCount = document.getElementById('onlineUsersCount');
 
         // -------------------------------------------------------------------------
-        // A. KAZI YA JINA LA MTUMIAJI
+        // A. KAZI YA JINA LA MTUMIAJI & KUINGIA (Pamoja na Cheki ya Jina)
         // -------------------------------------------------------------------------
 
         // 1. Angalia kama jina tayari limehifadhiwa
         function checkUsername() {
             const storedUsername = localStorage.getItem('chatUsername');
             if (storedUsername) {
-                currentUsername = storedUsername;
-                showChat();
+                // Cheki hii bado inahitajika hata kama jina limehifadhiwa, kuzuia kuingia
+                // ikiwa mtumiaji mwingine alitumia jina hilo wakati umefunga ukurasa.
+                checkIfNameIsAvailable(storedUsername, true); 
             }
         }
 
-        // 2. Kazi ya Kuhifadhi Jina
-        setUsernameButton.addEventListener('click', () => {
-            const username = usernameInput.value.trim();
-            if (username && username.length > 2) {
-                currentUsername = username;
-                localStorage.setItem('chatUsername', username);
-                showChat();
-            } else {
+        // 2. Kazi ya Cheki ya Jina (Uniqueness)
+        function checkIfNameIsAvailable(requestedUsername, isStored = false) {
+            if (requestedUsername.length < 3) {
                 alert("ACCESS DENIED: Jina linahitaji angalau herufi 3.");
+                return;
             }
+
+            // Cheki kama jina lipo kwenye orodha ya online users
+            database.ref('online_users/' + requestedUsername).once('value', (snapshot) => {
+                if (snapshot.exists() && !isStored) {
+                    alert(`Jina la mtumiaji "${requestedUsername}" tayari linatumika. Tafadhali chagua jina lingine.`);
+                } else if (snapshot.exists() && isStored) {
+                    // Ikiwa jina lilikuwa stored lakini linaonekana online, inamaanisha
+                    // connection ya zamani haikuondolewa. Tunajaribu kulitumia tena.
+                    currentUsername = requestedUsername;
+                    showChat();
+                } else {
+                    currentUsername = requestedUsername;
+                    localStorage.setItem('chatUsername', requestedUsername);
+                    showChat();
+                }
+            });
+        }
+
+        // 3. Listener kwa Button ya Ku-Set Jina
+        setUsernameButton.addEventListener('click', () => {
+            const requestedUsername = usernameInput.value.trim();
+            checkIfNameIsAvailable(requestedUsername, false);
         });
         
-        // 3. Onyesha Chat Box na Ficha Prompt
+        // 4. Onyesha Chat Box na Ficha Prompt (Pamoja na Firebase Presence)
         function showChat() {
             usernamePrompt.style.display = 'none';
             chatContainer.style.display = 'block';
-            onlineUsersContainer.style.display = 'block';
-            setupUserPresence(); // Setup user presence tracking
-            loadMessages(); // Anza kupakia ujumbe baada ya kuingia
-            messageInput.focus(); // Weka kishale kwenye sehemu ya kuandika
+            
+            // --- FIREBASE PRESENCE (ONLINE STATUS) ---
+            const userRef = database.ref('online_users/' + currentUsername);
+            
+            // 1. Ondoa user kwenye online_users wakati connection inapotea
+            userRef.onDisconnect().remove(); 
+            
+            // 2. Weka user kama "online"
+            userRef.set(true); 
+
+            // Anzisha listeners za chat na list ya online users
+            loadMessages();
+            loadOnlineUsers(); 
+            messageInput.focus();
         }
 
         // -------------------------------------------------------------------------
@@ -393,23 +275,18 @@
             const messageText = messageInput.value.trim();
             
             if (messageText) {
-                // Detect mentions in the message
-                const mentions = detectMentions(messageText);
-                
                 // Tuma ujumbe, jina la mtumiaji, na timestamp
                 messagesRef.push({
-                    user: currentUsername, // Hili ndilo jina la mtumiaji tulilohifadhi
+                    user: currentUsername, 
                     text: messageText,
-                    timestamp: Date.now(),
-                    mentions: mentions // Store mentions in the message
+                    timestamp: Date.now()
                 });
 
-                messageInput.value = ''; // Safisha input
-                hideUserSuggestions(); // Hide suggestions after sending
+                messageInput.value = ''; 
             }
         });
 
-        // 2. Kazi ya Kupokea Ujumbe
+        // 2. Kazi ya Kupokea Ujumbe na Kuangalia Owner
         function loadMessages() {
             messagesRef.on('child_added', (snapshot) => {
                 const messageData = snapshot.val();
@@ -418,23 +295,20 @@
                 const date = new Date(messageData.timestamp);
                 const timeString = date.toLocaleTimeString('en-US', {hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit'});
                 
+                // Cheki kwa ajili ya Owner
+                const isOwner = messageData.user === OWNER_USERNAME;
+
                 // Unda HTML ya Ujumbe
                 const messageElement = document.createElement('div');
                 messageElement.classList.add('message');
-                
-                // Check if current user is mentioned
-                if (messageData.mentions && messageData.mentions.includes(currentUsername)) {
-                    messageElement.classList.add('mentioned');
-                    showMentionNotification(messageData.user);
+                if (isOwner) {
+                    messageElement.classList.add('owner-message'); // Ongeza class kwa Owner
                 }
-                
-                // Process message text to highlight mentions
-                const processedText = processMessageText(messageData.text);
                 
                 messageElement.innerHTML = `
                     <span class="timestamp">[${timeString}]</span>
-                    <span class="username">${messageData.user}:</span> 
-                    ${processedText}
+                    <span class="username">${messageData.user}</span>: 
+                    ${messageData.text}
                 `;
 
                 // Ongeza na Shuka Chini
@@ -442,178 +316,35 @@
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
             });
         }
-        
-        // 3. Detect mentions in message text
-        function detectMentions(text) {
-            const mentionRegex = /@(\w+)/g;
-            const mentions = [];
-            let match;
-            
-            while ((match = mentionRegex.exec(text)) !== null) {
-                mentions.push(match[1]);
-            }
-            
-            return mentions;
-        }
-        
-        // 4. Process message text to highlight mentions
-        function processMessageText(text) {
-            return text.replace(/@(\w+)/g, '<span class="mention">@$1</span>');
-        }
-        
-        // 5. Show mention notification
-        function showMentionNotification(mentionedBy) {
-            mentionNotification.textContent = `MENTIONED BY ${mentionedBy}`;
-            mentionNotification.style.display = 'block';
-            
-            setTimeout(() => {
-                mentionNotification.style.display = 'none';
-            }, 5000);
-        }
-        
+
         // -------------------------------------------------------------------------
-        // C. USER TAGGING FEATURES
+        // C. KAZI YA ONLINE USERS LIST
         // -------------------------------------------------------------------------
-        
-        // 1. Setup user presence tracking
-        function setupUserPresence() {
-            // Add current user to online users
-            const userRef = usersRef.child(currentUsername);
-            userRef.set({
-                username: currentUsername,
-                lastSeen: Date.now(),
-                online: true
-            });
-            
-            // Remove user when they disconnect
-            userRef.onDisconnect().remove();
-            
-            // Listen for online users
-            usersRef.on('child_added', (snapshot) => {
-                const userData = snapshot.val();
-                if (userData.username !== currentUsername) {
-                    onlineUsers[userData.username] = userData;
-                    updateUserSuggestions();
-                    updateOnlineUsersList();
-                }
-            });
-            
-            usersRef.on('child_removed', (snapshot) => {
-                const username = snapshot.key;
-                delete onlineUsers[username];
-                updateUserSuggestions();
-                updateOnlineUsersList();
-            });
-        }
-        
-        // 2. Update user suggestions for autocomplete
-        function updateUserSuggestions() {
-            userSuggestions = Object.keys(onlineUsers);
-        }
-        
-        // 3. Show user suggestions when typing @
-        messageInput.addEventListener('input', (e) => {
-            const cursorPosition = e.target.selectionStart;
-            const textBeforeCursor = e.target.value.substring(0, cursorPosition);
-            const lastAtIndex = textBeforeCursor.lastIndexOf('@');
-            
-            if (lastAtIndex !== -1) {
-                const searchTerm = textBeforeCursor.substring(lastAtIndex + 1);
-                showUserSuggestions(searchTerm, lastAtIndex);
-            } else {
-                hideUserSuggestions();
-            }
-        });
-        
-        // 4. Show user suggestions
-        function showUserSuggestions(searchTerm, position) {
-            const filteredUsers = userSuggestions.filter(user => 
-                user.toLowerCase().includes(searchTerm.toLowerCase()) && user !== currentUsername
-            );
-            
-            if (filteredUsers.length === 0) {
-                hideUserSuggestions();
-                return;
-            }
-            
-            userSuggestionsContainer.innerHTML = '';
-            filteredUsers.forEach(user => {
-                const suggestionElement = document.createElement('div');
-                suggestionElement.classList.add('userSuggestion');
-                suggestionElement.textContent = user;
-                suggestionElement.addEventListener('click', () => {
-                    selectUserSuggestion(user, position);
+        function loadOnlineUsers() {
+            database.ref('online_users').on('value', (snapshot) => {
+                onlineUsersList.innerHTML = ''; // Safisha list
+                let count = 0;
+
+                snapshot.forEach((childSnapshot) => {
+                    const username = childSnapshot.key;
+                    count++;
+                    
+                    const li = document.createElement('li');
+                    li.textContent = username;
+                    // Tofautisha Owner kwenye list
+                    if (username === OWNER_USERNAME) {
+                         li.classList.add('owner-online'); 
+                    }
+                    onlineUsersList.appendChild(li);
                 });
-                userSuggestionsContainer.appendChild(suggestionElement);
-            });
-            
-            userSuggestionsContainer.style.display = 'block';
-        }
-        
-        // 5. Hide user suggestions
-        function hideUserSuggestions() {
-            userSuggestionsContainer.style.display = 'none';
-        }
-        
-        // 6. Select user from suggestions
-        function selectUserSuggestion(username, position) {
-            const currentValue = messageInput.value;
-            const textBeforeCursor = currentValue.substring(0, position);
-            const textAfterCursor = currentValue.substring(messageInput.selectionStart);
-            
-            messageInput.value = textBeforeCursor + '@' + username + ' ' + textAfterCursor;
-            messageInput.focus();
-            messageInput.selectionStart = messageInput.selectionEnd = position + username.length + 2;
-            
-            hideUserSuggestions();
-        }
-        
-        // 7. Update online users list
-        function updateOnlineUsersList() {
-            onlineUsersContainer.innerHTML = '<h3>ONLINE USERS</h3>';
-            
-            // Add current user first
-            const currentUserElement = document.createElement('div');
-            currentUserElement.classList.add('onlineUser');
-            currentUserElement.innerHTML = `<span class="username">${currentUsername} (YOU)</span>`;
-            onlineUsersContainer.appendChild(currentUserElement);
-            
-            // Add other users
-            Object.keys(onlineUsers).forEach(username => {
-                if (username !== currentUsername) {
-                    const userElement = document.createElement('div');
-                    userElement.classList.add('onlineUser');
-                    userElement.innerHTML = `<span class="username">${username}</span>`;
-                    userElement.addEventListener('click', () => {
-                        insertUserMention(username);
-                    });
-                    onlineUsersContainer.appendChild(userElement);
-                }
+                
+                onlineUsersCount.textContent = `(${count})`;
             });
         }
-        
-        // 8. Insert user mention when clicking on online user
-        function insertUserMention(username) {
-            const currentValue = messageInput.value;
-            const cursorPosition = messageInput.selectionStart;
-            
-            messageInput.value = currentValue.substring(0, cursorPosition) + '@' + username + ' ' + currentValue.substring(cursorPosition);
-            messageInput.focus();
-            messageInput.selectionStart = messageInput.selectionEnd = cursorPosition + username.length + 2;
-        }
-        
-        // 9. Toggle online users panel
-        toggleUsersBtn.addEventListener('click', () => {
-            if (onlineUsersContainer.style.display === 'none') {
-                onlineUsersContainer.style.display = 'block';
-            } else {
-                onlineUsersContainer.style.display = 'none';
-            }
-        });
-        
+
         // ANZA: Fanya ukaguzi wa jina la mtumiaji mara tu ukurasa unapofunguliwa
         checkUsername();
 
     </script>
 </body>
-    </html>
+</html>
