@@ -3,163 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DarkX Official: Secret Chatting Box</title>
+    <title>DarkX Official: Secure Chat</title>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css'); /* Kwa ajili ya Hamburger icon */
+
+        :root {
+            --primary-color: #3f51b5; /* Kijivu cha Kijani */
+            --secondary-color: #f44336; /* Nyekundu */
+            --bg-color: #f4f7f6; /* Nyeupe iliyokoza */
+            --chat-bg: #ffffff;
+            --text-color: #333333;
+            --timestamp-color: #999999;
+            --owner-color: #ff5722; /* Rangi ya Orange-Red kwa Owner */
+        }
 
         body {
-            background-color: #000000; /* Nyeusi */
-            color: #00FF41; /* Kijani cha Matrix */
-            font-family: 'VT323', monospace; /* Font ya kipekee */
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
+            min-height: 100vh;
         }
         h1 {
-            color: #33FF33;
-            text-shadow: 0 0 10px #00FF41;
-            border-bottom: 2px solid #00FF41;
+            color: var(--primary-color);
+            border-bottom: 2px solid #eeeeee;
             padding-bottom: 10px;
             margin-bottom: 20px;
-            font-size: 2.5em;
+            font-size: 1.8em;
+            font-weight: 700;
+            text-align: center;
         }
         #chat-container {
-            width: 90%;
-            max-width: 800px;
-            background-color: #0A0A0A;
-            border: 2px solid #00FF41;
-            box-shadow: 0 0 20px #00FF41;
-            padding: 15px;
-            position: relative; /* Kwa ajili ya Online Users Submenu */
+            width: 100%;
+            max-width: 600px;
+            height: 80vh; /* Taja urefu wa Chat Box */
+            background-color: var(--chat-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
         }
 
-        /* Online Users Submenu */
-        #online-users-box {
+        /* Hamburger Menu Icon */
+        #menu-toggle {
             position: absolute;
             top: 20px;
-            right: -250px; /* Weka nje ya chat box */
-            width: 230px;
-            padding: 10px;
-            background-color: #0A0A0A;
-            border: 1px solid #00FF41;
-            box-shadow: 0 0 10px #00FF41;
+            right: 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5em;
+            color: var(--primary-color);
+            z-index: 5;
+        }
+
+        /* Online Users Submenu (Sasa ni Sidebar) */
+        #online-users-box {
+            position: absolute;
+            top: 0;
+            right: -250px; /* Anza nje ya Chat Box */
+            width: 250px;
+            height: 100%;
+            padding: 20px;
+            background-color: #ffffff;
+            border-left: 1px solid #eeeeee;
+            box-shadow: -4px 0 10px rgba(0, 0, 0, 0.05);
+            transition: right 0.3s ease-in-out;
+            z-index: 4;
+            display: flex;
+            flex-direction: column;
+        }
+        #online-users-box.open {
+            right: 0; /* Hamisha ndani wakati wa kufungua */
         }
         #online-users-box h3 {
             margin-top: 0;
-            color: #33FF33;
-            border-bottom: 1px dashed #008800;
-            padding-bottom: 5px;
+            color: var(--primary-color);
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            font-size: 1.2em;
         }
         #onlineUsersList {
             list-style: none;
             padding: 0;
             margin: 0;
-            font-size: 1.1em;
+            overflow-y: auto;
+            flex-grow: 1;
         }
         #onlineUsersList li {
-            padding: 2px 0;
-            color: #00FF41;
+            padding: 8px 0;
+            color: var(--text-color);
+            cursor: pointer; /* Kwa ajili ya Tagging */
+            transition: background-color 0.2s;
+            border-bottom: 1px dotted #f0f0f0;
         }
-        .owner-online { /* Rangi ya Owner kwenye list */
-            color: #FF3333 !important; 
-            font-weight: bold;
+        #onlineUsersList li:hover {
+            background-color: #f9f9f9;
+        }
+        .owner-online { 
+            color: var(--owner-color) !important; 
+            font-weight: 600;
         }
 
         /* Box ya Ujumbe Uliotunzwa */
         #messages {
-            height: 400px;
+            flex-grow: 1;
             overflow-y: scroll;
-            margin-bottom: 15px;
-            padding: 10px;
-            border: 1px dashed #008800;
+            padding: 20px;
+            padding-right: 10px;
+            margin-bottom: 0;
+            background-color: #f9f9f9;
         }
 
         /* Muonekano wa Ujumbe Mmoja */
         .message {
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             word-wrap: break-word;
+            line-height: 1.5;
         }
         
         /* Rangi ya Kawaida ya Jina */
         .username {
-            color: #FFFFFF;
-            font-weight: bold;
-            text-shadow: 0 0 5px #FFFFFF;
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-right: 5px;
         }
         
-        /* Rangi ya Jina la Owner (Mgeni) */
+        /* Rangi ya Jina la Owner */
         .owner-message .username {
-            color: #FF3333; /* Rangi Mpya kwa Owner */
-            text-shadow: 0 0 8px #FF3333;
-            font-size: 1.1em;
+            color: var(--owner-color); 
+            font-weight: 700;
+        }
+
+        /* Muonekano wa Tagi */
+        .tag-user {
+            color: var(--secondary-color);
+            font-weight: 600;
+            background-color: #ffedeb;
+            padding: 2px 4px;
+            border-radius: 4px;
         }
 
         .timestamp {
             font-size: 0.8em;
-            color: #008800;
+            color: var(--timestamp-color);
             margin-right: 5px;
+            font-weight: 300;
         }
 
         /* Sehemu ya Kuandika Ujumbe (Input/Button) */
+        #messageForm {
+            display: flex;
+            border-top: 1px solid #eee;
+            padding: 10px;
+            background-color: var(--chat-bg);
+        }
         #messageInput {
             flex-grow: 1;
             padding: 10px;
-            border: none;
-            background-color: #000000;
-            color: #00FF41;
-            font-family: 'VT323', monospace;
-            font-size: 1.2em;
-            border-bottom: 1px solid #00FF41;
+            border: 1px solid #dddddd;
+            border-radius: 8px;
+            margin-right: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1em;
         }
         #messageForm button {
-            padding: 10px 20px;
-            background-color: #008800;
-            color: #000000;
+            padding: 10px 15px;
+            background-color: var(--primary-color);
+            color: #ffffff;
             border: none;
+            border-radius: 8px;
             cursor: pointer;
-            font-family: 'VT323', monospace;
-            font-size: 1.2em;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1em;
+            font-weight: 600;
             transition: background-color 0.3s;
         }
-        /* (CSS kwa Username Prompt imebaki kama zamani) */
+        #messageForm button:hover {
+            background-color: #303f9f;
+        }
+
+        /* Username Prompt - Tumesafisha */
         #username-prompt {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.95); display: flex;
+            background: rgba(255, 255, 255, 0.98); display: flex;
             justify-content: center; align-items: center; z-index: 1000;
             flex-direction: column;
+            text-align: center;
+        }
+        #username-prompt h1 {
+            color: var(--secondary-color);
+            margin-bottom: 30px;
+            font-size: 2em;
         }
         #username-prompt input, #username-prompt button {
-            padding: 15px; margin: 10px; font-size: 1.5em; background-color: #0A0A0A;
-            color: #00FF41; border: 1px solid #00FF41; font-family: 'VT323', monospace;
+            padding: 12px 20px; margin: 10px; font-size: 1.1em; 
+            border-radius: 8px; font-family: 'Poppins', sans-serif;
+        }
+        #username-prompt input {
+            border: 1px solid #ccc;
+            width: 80%; max-width: 300px;
+        }
+        #username-prompt button {
+            background-color: var(--primary-color);
+            color: white; border: none;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
     <div id="username-prompt">
-        <h1>ACCESS DENIED: IDENTIFY SELF</h1>
-        <input type="text" id="usernameInput" placeholder="Enter Your Alias (Jina la Siri)" required>
+        <h1>ACCESS: SECURE CHAT</h1>
+        <input type="text" id="usernameInput" placeholder="Enter Your Alias" required>
         <button id="setUsernameButton">ENTER SYSTEM</button>
     </div>
 
     <div id="chat-container" style="display:none;">
-        <h1>DarkX Official: Secret Chatting Box</h1>
+        <h1>DarkX Official: Secure Chat</h1>
+
+        <button id="menu-toggle"><i class="fas fa-bars"></i></button>
 
         <div id="online-users-box">
             <h3>AGENTS ONLINE <span id="onlineUsersCount">(0)</span></h3>
             <ul id="onlineUsersList">
-                </ul>
+            </ul>
         </div>
         
         <div id="messages">
-            </div>
+        </div>
 
         <form id="messageForm">
-            <input type="text" id="messageInput" placeholder=">> SEND SIGNAL..." required>
-            <button type="submit">TRANSMIT</button>
+            <input type="text" id="messageInput" placeholder="Type your message..." required>
+            <button type="submit">SEND</button>
         </form>
     </div>
 
@@ -180,7 +265,7 @@
         // =========================================================================
         
         // Jina la Owner (Hili jina litakuwa na rangi tofauti kwenye chat)
-        const OWNER_USERNAME = "DarkX_Admin"; 
+        const OWNER_USERNAME = "DarkX👑"; // Jina jipya la Owner
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
@@ -199,25 +284,28 @@
         const messagesContainer = document.getElementById('messages');
         const onlineUsersList = document.getElementById('onlineUsersList');
         const onlineUsersCount = document.getElementById('onlineUsersCount');
+        const onlineUsersBox = document.getElementById('online-users-box');
+        const menuToggle = document.getElementById('menu-toggle');
 
         // -------------------------------------------------------------------------
         // A. KAZI YA JINA LA MTUMIAJI & KUINGIA (Pamoja na Cheki ya Jina)
         // -------------------------------------------------------------------------
 
-        // 1. Angalia kama jina tayari limehifadhiwa
         function checkUsername() {
             const storedUsername = localStorage.getItem('chatUsername');
             if (storedUsername) {
-                // Cheki hii bado inahitajika hata kama jina limehifadhiwa, kuzuia kuingia
-                // ikiwa mtumiaji mwingine alitumia jina hilo wakati umefunga ukurasa.
+                // Cheki kama jina limehifadhiwa na linaweza kutumika
                 checkIfNameIsAvailable(storedUsername, true); 
             }
         }
 
-        // 2. Kazi ya Cheki ya Jina (Uniqueness)
         function checkIfNameIsAvailable(requestedUsername, isStored = false) {
             if (requestedUsername.length < 3) {
-                alert("ACCESS DENIED: Jina linahitaji angalau herufi 3.");
+                alert("Jina linahitaji angalau herufi 3.");
+                return;
+            }
+            if (requestedUsername.toLowerCase() === OWNER_USERNAME.toLowerCase() && requestedUsername !== OWNER_USERNAME) {
+                alert(`Jina "${requestedUsername}" linafanana na Owner. Tafadhali chagua jina lingine.`);
                 return;
             }
 
@@ -225,11 +313,6 @@
             database.ref('online_users/' + requestedUsername).once('value', (snapshot) => {
                 if (snapshot.exists() && !isStored) {
                     alert(`Jina la mtumiaji "${requestedUsername}" tayari linatumika. Tafadhali chagua jina lingine.`);
-                } else if (snapshot.exists() && isStored) {
-                    // Ikiwa jina lilikuwa stored lakini linaonekana online, inamaanisha
-                    // connection ya zamani haikuondolewa. Tunajaribu kulitumia tena.
-                    currentUsername = requestedUsername;
-                    showChat();
                 } else {
                     currentUsername = requestedUsername;
                     localStorage.setItem('chatUsername', requestedUsername);
@@ -238,27 +321,22 @@
             });
         }
 
-        // 3. Listener kwa Button ya Ku-Set Jina
         setUsernameButton.addEventListener('click', () => {
             const requestedUsername = usernameInput.value.trim();
             checkIfNameIsAvailable(requestedUsername, false);
         });
         
-        // 4. Onyesha Chat Box na Ficha Prompt (Pamoja na Firebase Presence)
+        // Ficha/Onyesha Chat Box na Firebase Presence
         function showChat() {
             usernamePrompt.style.display = 'none';
-            chatContainer.style.display = 'block';
+            chatContainer.style.display = 'flex';
             
             // --- FIREBASE PRESENCE (ONLINE STATUS) ---
             const userRef = database.ref('online_users/' + currentUsername);
             
-            // 1. Ondoa user kwenye online_users wakati connection inapotea
-            userRef.onDisconnect().remove(); 
-            
-            // 2. Weka user kama "online"
-            userRef.set(true); 
+            userRef.onDisconnect().remove(); // Ondoa user kwenye online_users wakati connection inapotea
+            userRef.set(true); // Weka user kama "online"
 
-            // Anzisha listeners za chat na list ya online users
             loadMessages();
             loadOnlineUsers(); 
             messageInput.focus();
@@ -268,14 +346,13 @@
         // B. KAZI YA CHAT (FIREBASE RTDB)
         // -------------------------------------------------------------------------
 
-        // 1. Kazi ya Kutuma Ujumbe
+        // Tuma Ujumbe
         messageForm.addEventListener('submit', (e) => {
             e.preventDefault();
             
             const messageText = messageInput.value.trim();
             
             if (messageText) {
-                // Tuma ujumbe, jina la mtumiaji, na timestamp
                 messagesRef.push({
                     user: currentUsername, 
                     text: messageText,
@@ -286,17 +363,21 @@
             }
         });
 
-        // 2. Kazi ya Kupokea Ujumbe na Kuangalia Owner
+        // Kupokea Ujumbe na Kuangalia Owner
         function loadMessages() {
             messagesRef.on('child_added', (snapshot) => {
                 const messageData = snapshot.val();
                 
-                // Format ya Muda
                 const date = new Date(messageData.timestamp);
-                const timeString = date.toLocaleTimeString('en-US', {hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit'});
+                const timeString = date.toLocaleTimeString('en-US', {hour12: false, hour: '2-digit', minute: '2-digit'});
                 
-                // Cheki kwa ajili ya Owner
                 const isOwner = messageData.user === OWNER_USERNAME;
+                
+                // Kazi ya Ku-Tag
+                let formattedText = messageData.text.replace(/@(\w+)/g, (match, username) => {
+                    // Tumia regex kubaini usernames na kuzifunga kwa span
+                    return `<span class="tag-user">@${username}</span>`;
+                });
 
                 // Unda HTML ya Ujumbe
                 const messageElement = document.createElement('div');
@@ -306,9 +387,9 @@
                 }
                 
                 messageElement.innerHTML = `
-                    <span class="timestamp">[${timeString}]</span>
+                    <span class="timestamp">${timeString}</span>
                     <span class="username">${messageData.user}</span>: 
-                    ${messageData.text}
+                    ${formattedText}
                 `;
 
                 // Ongeza na Shuka Chini
@@ -318,7 +399,7 @@
         }
 
         // -------------------------------------------------------------------------
-        // C. KAZI YA ONLINE USERS LIST
+        // C. KAZI YA ONLINE USERS LIST & TAGGING
         // -------------------------------------------------------------------------
         function loadOnlineUsers() {
             database.ref('online_users').on('value', (snapshot) => {
@@ -331,16 +412,53 @@
                     
                     const li = document.createElement('li');
                     li.textContent = username;
+                    li.setAttribute('data-username', username);
+                    
                     // Tofautisha Owner kwenye list
                     if (username === OWNER_USERNAME) {
                          li.classList.add('owner-online'); 
                     }
+
+                    // Listener kwa ajili ya Tagging
+                    li.addEventListener('click', () => {
+                        tagUser(username);
+                    });
+
                     onlineUsersList.appendChild(li);
                 });
                 
                 onlineUsersCount.textContent = `(${count})`;
             });
         }
+
+        // Kazi ya Ku-Tag
+        function tagUser(username) {
+            const tag = `@${username} `;
+            const input = messageInput;
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+
+            // Ingiza tag kwenye sehemu ya kursor
+            input.value = input.value.substring(0, start) + tag + input.value.substring(end);
+            
+            // Fanya kursor irudi mwisho wa tag
+            input.selectionStart = input.selectionEnd = start + tag.length;
+            input.focus();
+            
+            // Funga menu baada ya kutag
+            onlineUsersBox.classList.remove('open');
+        }
+
+        // Hamburger Menu Toggle
+        menuToggle.addEventListener('click', () => {
+            onlineUsersBox.classList.toggle('open');
+            // Badilisha icon
+            if (onlineUsersBox.classList.contains('open')) {
+                menuToggle.innerHTML = '<i class="fas fa-times"></i>'; // 'X' icon
+            } else {
+                menuToggle.innerHTML = '<i class="fas fa-bars"></i>'; // Hamburger icon
+            }
+        });
 
         // ANZA: Fanya ukaguzi wa jina la mtumiaji mara tu ukurasa unapofunguliwa
         checkUsername();
