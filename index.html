@@ -3,10 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DarkNet Secure Channel</title>
+    <title>DarkX Official: Secret Chatting Box</title>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=VT323&display=swap');
+
+        :root {
+            --neon-green: #00FF41;
+            --neon-green-glow: #00FF41;
+            --neon-blue: #00D9FF;
+            --neon-blue-glow: #00D9FF;
+            --neon-purple: #B026FF;
+            --neon-purple-glow: #B026FF;
+            --dark-bg: #0A0A0A;
+            --darker-bg: #050505;
+            --panel-bg: rgba(10, 10, 10, 0.8);
+            --text-color: #E0E0E0;
+            --accent-orange: #FF9900;
+            --accent-orange-glow: #FF9900;
+        }
 
         * {
             margin: 0;
@@ -15,549 +30,727 @@
         }
 
         body {
-            background: #0a0a0a;
-            color: #00ff00;
-            font-family: 'Share Tech Mono', monospace;
-            line-height: 1.4;
+            background: linear-gradient(135deg, var(--darker-bg) 0%, #111 100%);
+            color: var(--text-color);
+            font-family: 'Orbitron', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
             overflow-x: hidden;
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(0, 40, 0, 0.1) 0%, transparent 20%),
-                radial-gradient(circle at 90% 80%, rgba(0, 40, 0, 0.1) 0%, transparent 20%);
+            position: relative;
         }
 
-        /* Terminal-style scanline effect */
+        /* Animated Background */
         body::before {
-            content: "";
+            content: '';
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: repeating-linear-gradient(
-                0deg,
-                rgba(0, 0, 0, 0.15) 0px,
-                rgba(0, 0, 0, 0.15) 1px,
-                transparent 1px,
-                transparent 2px
-            );
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 65, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 217, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(176, 38, 255, 0.05) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        /* Matrix-like animated lines */
+        .matrix-lines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
             pointer-events: none;
-            z-index: 1000;
         }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
+        .matrix-line {
+            position: absolute;
+            width: 2px;
+            height: 100px;
+            background: var(--neon-green);
+            opacity: 0;
+            animation: matrixFall linear infinite;
         }
 
-        .header {
-            border-bottom: 1px solid #003300;
+        @keyframes matrixFall {
+            0% {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            5% {
+                opacity: 1;
+            }
+            95% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+
+        h1 {
+            color: var(--neon-green);
+            text-shadow: 0 0 10px var(--neon-green-glow), 0 0 20px var(--neon-green-glow);
+            border-bottom: 2px solid var(--neon-green);
             padding-bottom: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            font-size: 2.8em;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-align: center;
             position: relative;
+            overflow: hidden;
         }
 
-        .header::after {
-            content: "";
+        h1::after {
+            content: '';
             position: absolute;
             bottom: -2px;
             left: 0;
             width: 100%;
-            height: 1px;
-            background: #00ff00;
-            box-shadow: 0 0 10px #00ff00;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-green), transparent);
+            animation: pulseLine 3s infinite;
         }
 
-        .title {
-            font-size: 1.8rem;
-            color: #00ff00;
-            text-shadow: 0 0 5px #00ff00;
-            letter-spacing: 2px;
-            margin-bottom: 5px;
+        @keyframes pulseLine {
+            0%, 100% {
+                opacity: 0.5;
+            }
+            50% {
+                opacity: 1;
+            }
         }
 
-        .subtitle {
-            color: #008800;
-            font-size: 0.9rem;
+        #chat-container {
+            width: 90%;
+            max-width: 1000px;
+            background: var(--panel-bg);
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.2);
+            padding: 25px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            margin: 20px auto;
+            position: relative;
+            overflow: hidden;
         }
 
-        .chat-area {
-            display: flex;
-            gap: 20px;
+        #chat-container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--neon-green), var(--neon-blue), var(--neon-purple), var(--neon-green));
+            border-radius: 14px;
+            z-index: -1;
+            animation: borderRotate 10s linear infinite;
+        }
+
+        @keyframes borderRotate {
+            0% {
+                filter: hue-rotate(0deg);
+            }
+            100% {
+                filter: hue-rotate(360deg);
+            }
+        }
+
+        /* Box ya Ujumbe Uliotunzwa */
+        #messages {
+            height: 450px;
+            overflow-y: scroll;
             margin-bottom: 20px;
-        }
-
-        .users-panel {
-            width: 250px;
-            background: #111111;
-            border: 1px solid #003300;
             padding: 15px;
-            height: 500px;
-            overflow-y: auto;
+            border: 1px solid rgba(0, 255, 65, 0.2);
+            border-radius: 8px;
+            background: rgba(5, 5, 5, 0.7);
+            scrollbar-width: thin;
+            scrollbar-color: var(--neon-green) var(--darker-bg);
         }
 
-        .users-panel h3 {
-            color: #00cc00;
-            border-bottom: 1px solid #003300;
-            padding-bottom: 8px;
-            margin-bottom: 15px;
-            font-size: 1rem;
+        #messages::-webkit-scrollbar {
+            width: 8px;
         }
 
-        .user-list {
-            list-style: none;
+        #messages::-webkit-scrollbar-track {
+            background: var(--darker-bg);
+            border-radius: 4px;
         }
 
-        .user-item {
-            padding: 8px 10px;
-            margin-bottom: 8px;
-            background: #0a0a0a;
-            border: 1px solid #002200;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.9rem;
+        #messages::-webkit-scrollbar-thumb {
+            background: var(--neon-green);
+            border-radius: 4px;
         }
 
-        .user-item:hover {
-            background: #003300;
-            border-color: #00aa00;
-        }
-
-        .user-item.online {
-            border-left: 3px solid #00ff00;
-        }
-
-        .user-item.offline {
-            border-left: 3px solid #555555;
-            color: #666666;
-        }
-
-        .chat-container {
-            flex: 1;
-            background: #111111;
-            border: 1px solid #003300;
-            display: flex;
-            flex-direction: column;
-            height: 500px;
-        }
-
-        .messages {
-            flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-            background: #0a0a0a;
-        }
-
+        /* Muonekano wa Ujumbe Mmoja */
         .message {
             margin-bottom: 15px;
-            padding: 10px;
-            border-left: 2px solid #003300;
-            background: rgba(0, 20, 0, 0.2);
+            padding: 12px;
+            border-radius: 8px;
+            background: rgba(20, 20, 20, 0.5);
+            transition: all 0.3s ease;
+            word-wrap: break-word;
+            position: relative;
+            overflow: hidden;
         }
 
-        .message.mentioned {
-            border-left: 2px solid #ff6600;
-            background: rgba(255, 102, 0, 0.05);
-        }
-
-        .message-header {
-            display: flex;
-            justify-content: between;
-            margin-bottom: 5px;
-            font-size: 0.85rem;
+        .message:hover {
+            background: rgba(30, 30, 30, 0.7);
+            transform: translateX(5px);
         }
 
         .username {
-            color: #00cc00;
-            font-weight: bold;
+            color: var(--neon-blue);
+            font-weight: 700;
+            text-shadow: 0 0 5px var(--neon-blue-glow);
+            display: inline-block;
+            margin-right: 8px;
+            font-size: 1.1em;
         }
 
         .timestamp {
-            color: #555555;
-            margin-left: auto;
+            font-size: 0.8em;
+            color: #777;
+            margin-right: 10px;
+            font-family: 'VT323', monospace;
         }
-
-        .message-body {
-            color: #cccccc;
-            word-wrap: break-word;
-        }
-
+        
+        /* Muonekano wa user aliye-tag */
         .mention {
-            color: #ff9900;
-            background: rgba(255, 153, 0, 0.1);
-            padding: 1px 4px;
-            border-radius: 2px;
+            color: var(--accent-orange);
             font-weight: bold;
+            text-shadow: 0 0 5px var(--accent-orange-glow);
+            background-color: rgba(255, 153, 0, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .mention:hover {
+            background-color: rgba(255, 153, 0, 0.3);
+            transform: scale(1.05);
+        }
+        
+        /* Muonekano wa ujumbe ulio na mention */
+        .mentioned {
+            border-left: 4px solid var(--accent-orange);
+            padding-left: 10px;
+            background-color: rgba(255, 153, 0, 0.1);
+            animation: pulseMention 2s infinite;
         }
 
-        .input-area {
-            border-top: 1px solid #003300;
-            padding: 15px;
-            background: #0a0a0a;
+        @keyframes pulseMention {
+            0%, 100% {
+                box-shadow: 0 0 5px rgba(255, 153, 0, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 15px rgba(255, 153, 0, 0.5);
+            }
         }
 
-        .message-form {
+        /* Sehemu ya Kuandika Ujumbe */
+        #messageForm {
             display: flex;
-            gap: 10px;
+            position: relative;
+            margin-top: 20px;
         }
-
-        .message-input {
-            flex: 1;
-            background: #000000;
-            border: 1px solid #003300;
-            color: #00ff00;
-            padding: 10px 15px;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.9rem;
-        }
-
-        .message-input:focus {
+        
+        #messageInput {
+            flex-grow: 1;
+            padding: 15px;
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            background: rgba(10, 10, 10, 0.8);
+            color: var(--neon-green);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1em;
+            border-radius: 8px 0 0 8px;
+            transition: all 0.3s ease;
             outline: none;
-            border-color: #00aa00;
-            box-shadow: 0 0 5px #003300;
         }
 
-        .send-button {
-            background: #003300;
-            color: #00ff00;
-            border: 1px solid #00aa00;
-            padding: 10px 20px;
+        #messageInput:focus {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+        }
+
+        #messageForm button {
+            padding: 15px 25px;
+            background: linear-gradient(135deg, var(--neon-green) 0%, #00CC33 100%);
+            color: #000;
+            border: none;
             cursor: pointer;
-            font-family: 'Share Tech Mono', monospace;
-            transition: all 0.2s;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1em;
+            font-weight: 700;
+            border-radius: 0 8px 8px 0;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
-        .send-button:hover {
-            background: #005500;
-            box-shadow: 0 0 5px #00aa00;
+        #messageForm button:hover {
+            background: linear-gradient(135deg, #00CC33 0%, var(--neon-green) 100%);
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.7);
+            transform: translateY(-2px);
         }
-
-        .login-overlay {
+        
+        /* Box ya Kujaza Jina */
+        #username-prompt {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: #000000;
+            background: rgba(5, 5, 5, 0.95);
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 2000;
+            z-index: 1000;
+            flex-direction: column;
+            backdrop-filter: blur(10px);
+        }
+        
+        #username-prompt h1 {
+            margin-bottom: 40px;
+            font-size: 3em;
+            animation: titlePulse 2s infinite;
         }
 
-        .login-box {
-            background: #0a0a0a;
-            border: 1px solid #003300;
-            padding: 30px;
+        @keyframes titlePulse {
+            0%, 100% {
+                text-shadow: 0 0 10px var(--neon-green-glow), 0 0 20px var(--neon-green-glow);
+            }
+            50% {
+                text-shadow: 0 0 15px var(--neon-green-glow), 0 0 30px var(--neon-green-glow), 0 0 40px var(--neon-green-glow);
+            }
+        }
+        
+        #username-prompt input {
+            padding: 18px;
+            margin: 15px;
+            font-size: 1.3em;
+            background: rgba(10, 10, 10, 0.8);
+            color: var(--neon-green);
+            border: 1px solid var(--neon-green);
+            border-radius: 8px;
+            font-family: 'Orbitron', sans-serif;
             width: 400px;
-            box-shadow: 0 0 20px #001100;
-        }
-
-        .login-title {
-            color: #00ff00;
+            max-width: 80%;
             text-align: center;
-            margin-bottom: 20px;
-            font-size: 1.5rem;
+            transition: all 0.3s ease;
         }
 
-        .login-input {
-            width: 100%;
-            background: #000000;
-            border: 1px solid #003300;
-            color: #00ff00;
-            padding: 12px;
-            margin-bottom: 15px;
-            font-family: 'Share Tech Mono', monospace;
+        #username-prompt input:focus {
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
+            transform: scale(1.02);
         }
-
-        .login-button {
-            width: 100%;
-            background: #003300;
-            color: #00ff00;
-            border: 1px solid #00aa00;
-            padding: 12px;
+        
+        #username-prompt button {
+            padding: 18px 40px;
+            margin: 15px;
+            font-size: 1.3em;
+            background: linear-gradient(135deg, var(--neon-green) 0%, #00CC33 100%);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
             cursor: pointer;
-            font-family: 'Share Tech Mono', monospace;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .login-button:hover {
-            background: #005500;
+        #username-prompt button:hover {
+            background: linear-gradient(135deg, #00CC33 0%, var(--neon-green) 100%);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.7);
+            transform: translateY(-3px);
         }
-
-        .typing-indicator {
-            color: #008800;
-            font-style: italic;
-            padding: 5px 15px;
-            font-size: 0.85rem;
+        
+        /* Autocomplete ya user tagging */
+        #userSuggestions {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            width: 100%;
+            background: var(--panel-bg);
+            border: 1px solid var(--neon-green);
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            max-height: 150px;
+            overflow-y: auto;
+            display: none;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.5);
         }
-
-        .notification {
+        
+        .userSuggestion {
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(0, 255, 65, 0.2);
+            transition: all 0.2s ease;
+        }
+        
+        .userSuggestion:hover {
+            background-color: rgba(0, 255, 65, 0.1);
+            color: var(--neon-green);
+        }
+        
+        /* Notification ya mention */
+        #mentionNotification {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: #003300;
-            border: 1px solid #00aa00;
+            background: linear-gradient(135deg, var(--accent-orange) 0%, #FF6600 100%);
+            color: #000;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(255, 153, 0, 0.7);
+            display: none;
+            z-index: 1001;
+            font-weight: bold;
+            animation: slideInRight 0.5s ease, pulse 2s infinite;
+            max-width: 300px;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 15px rgba(255, 153, 0, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 25px rgba(255, 153, 0, 0.9);
+            }
+        }
+        
+        /* Online users panel */
+        #onlineUsers {
+            position: fixed;
+            top: 80px;
+            left: 20px;
+            background: var(--panel-bg);
+            border: 1px solid var(--neon-blue);
             padding: 15px;
-            color: #00ff00;
-            z-index: 1500;
-            box-shadow: 0 0 10px #001100;
-            display: none;
-        }
-
-        .suggestions-box {
-            position: absolute;
-            background: #0a0a0a;
-            border: 1px solid #003300;
-            max-height: 150px;
+            width: 220px;
+            max-height: 350px;
             overflow-y: auto;
-            z-index: 100;
             display: none;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+            z-index: 99;
         }
-
-        .suggestion-item {
-            padding: 8px 12px;
+        
+        #onlineUsers h3 {
+            margin-top: 0;
+            border-bottom: 1px solid var(--neon-blue);
+            padding-bottom: 10px;
+            color: var(--neon-blue);
+            text-shadow: 0 0 5px var(--neon-blue-glow);
+            text-align: center;
+            font-size: 1.2em;
+        }
+        
+        .onlineUser {
+            padding: 8px 10px;
+            margin-bottom: 8px;
+            border-bottom: 1px dashed rgba(0, 217, 255, 0.3);
             cursor: pointer;
-            border-bottom: 1px solid #002200;
-        }
-
-        .suggestion-item:hover {
-            background: #003300;
-        }
-
-        /* Blinking cursor effect */
-        .blink {
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
-        }
-
-        /* Scrollbar styling */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #0a0a0a;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #003300;
+            transition: all 0.2s ease;
             border-radius: 4px;
         }
+        
+        .onlineUser:hover {
+            background-color: rgba(0, 217, 255, 0.1);
+            color: var(--neon-blue);
+            transform: translateX(5px);
+        }
+        
+        /* Toggle button for online users */
+        #toggleUsersBtn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, var(--neon-blue) 0%, #0099CC 100%);
+            color: #000;
+            border: none;
+            padding: 12px 18px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            z-index: 100;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+        }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: #005500;
+        #toggleUsersBtn:hover {
+            background: linear-gradient(135deg, #0099CC 0%, var(--neon-blue) 100%);
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.7);
+            transform: translateY(-2px);
+        }
+
+        /* Connection status indicator */
+        #connectionStatus {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 700;
+            z-index: 99;
+            background: rgba(10, 10, 10, 0.8);
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #connectionStatus::before {
+            content: '';
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--neon-green);
+            animation: pulse 2s infinite;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            #chat-container {
+                width: 95%;
+                padding: 15px;
+            }
+            
+            #onlineUsers {
+                width: 200px;
+            }
+            
+            #username-prompt input {
+                width: 90%;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #messageForm {
+                flex-direction: column;
+            }
+            
+            #messageInput {
+                border-radius: 8px 8px 0 0;
+            }
+            
+            #messageForm button {
+                border-radius: 0 0 8px 8px;
+            }
+            
+            #onlineUsers {
+                width: 180px;
+                left: 10px;
+            }
+            
+            #toggleUsersBtn {
+                left: 10px;
+                padding: 10px 15px;
+                font-size: 0.9em;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="notification" id="notification"></div>
 
-    <div class="login-overlay" id="loginOverlay">
-        <div class="login-box">
-            <h2 class="login-title">DARKNET ACCESS</h2>
-            <input type="text" id="usernameInput" class="login-input" placeholder="ENTER YOUR ALIAS" autocomplete="off">
-            <button id="loginButton" class="login-button">CONNECT</button>
-            <div style="text-align: center; margin-top: 15px; color: #555; font-size: 0.8rem;">
-                WARNING: THIS CHANNEL IS ENCRYPTED AND SECURE
-            </div>
-        </div>
+    <div class="matrix-lines" id="matrixLines"></div>
+
+    <div id="username-prompt">
+        <h1>ACCESS DENIED: IDENTIFY SELF</h1>
+        <input type="text" id="usernameInput" placeholder="Enter Your Alias (Jina la Siri)" required>
+        <button id="setUsernameButton">ENTER SYSTEM</button>
     </div>
 
-    <div class="container" id="mainContainer" style="display: none;">
-        <div class="header">
-            <h1 class="title">DARKNET SECURE CHANNEL</h1>
-            <div class="subtitle">ENCRYPTED COMMUNICATION PROTOCOL ACTIVE | USER: <span id="currentUserDisplay"></span></div>
-        </div>
+    <button id="toggleUsersBtn">USERS ONLINE</button>
+    <div id="onlineUsers"></div>
+    
+    <div id="mentionNotification"></div>
 
-        <div class="chat-area">
-            <div class="users-panel">
-                <h3>REGISTERED USERS</h3>
-                <ul class="user-list" id="userList">
-                    <!-- Users will be populated here -->
-                </ul>
-            </div>
+    <div id="chat-container" style="display:none;">
+        <h1>DarkX Official: Secret Chatting Box</h1>
+        
+        <div id="messages"></div>
 
-            <div class="chat-container">
-                <div class="messages" id="messages">
-                    <!-- Messages will appear here -->
-                </div>
-                <div class="typing-indicator" id="typingIndicator"></div>
-                <div class="input-area">
-                    <form class="message-form" id="messageForm">
-                        <input type="text" id="messageInput" class="message-input" placeholder="Type your message... (Use @ to mention users)" autocomplete="off">
-                        <button type="submit" class="send-button">SEND</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <div style="text-align: center; color: #333; font-size: 0.8rem; margin-top: 20px;">
-            SECURE CONNECTION ESTABLISHED | ALL COMMUNICATIONS ENCRYPTED
-        </div>
+        <form id="messageForm">
+            <div id="userSuggestions"></div>
+            <input type="text" id="messageInput" placeholder=">> SEND SIGNAL..." required>
+            <button type="submit">TRANSMIT</button>
+        </form>
     </div>
+
+    <div id="connectionStatus">CONNECTED</div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <script>
-        // Firebase Configuration
+        // =========================================================================
+        // !!! MUHIMU: BADILISHA HAPA KWA MIPANGILIO YAKO HALISI YA FIREBASE !!!
+        // =========================================================================
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
             authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            databaseURL: "https://YOUR_PROJECT.firebaseio.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            databaseURL: "https://darkweb-chat-c0c51-default-rtdb.firebaseio.com", 
+            projectId: "darkweb-chat-c0c51",
+            // Weka data nyingine kama zipo
         };
+        // =========================================================================
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         const messagesRef = database.ref('messages');
-        const usersRef = database.ref('users');
-        const typingRef = database.ref('typing');
+        const usersRef = database.ref('users'); // Realtime database for online users
 
-        let currentUser = '';
-        let allUsers = {};
-        let typingTimeout;
+        let currentUsername = '';
+        let onlineUsers = {}; // Store online users
+        let userSuggestions = []; // Store user suggestions for autocomplete
 
-        // DOM Elements
-        const loginOverlay = document.getElementById('loginOverlay');
-        const mainContainer = document.getElementById('mainContainer');
+        // Marejeo ya HTML Elements
+        const usernamePrompt = document.getElementById('username-prompt');
         const usernameInput = document.getElementById('usernameInput');
-        const loginButton = document.getElementById('loginButton');
-        const currentUserDisplay = document.getElementById('currentUserDisplay');
-        const userList = document.getElementById('userList');
-        const messagesContainer = document.getElementById('messages');
+        const setUsernameButton = document.getElementById('setUsernameButton');
+        const chatContainer = document.getElementById('chat-container');
         const messageForm = document.getElementById('messageForm');
         const messageInput = document.getElementById('messageInput');
-        const typingIndicator = document.getElementById('typingIndicator');
-        const notification = document.getElementById('notification');
+        const messagesContainer = document.getElementById('messages');
+        const userSuggestionsContainer = document.getElementById('userSuggestions');
+        const mentionNotification = document.getElementById('mentionNotification');
+        const onlineUsersContainer = document.getElementById('onlineUsers');
+        const toggleUsersBtn = document.getElementById('toggleUsersBtn');
+        const matrixLinesContainer = document.getElementById('matrixLines');
 
-        // Login functionality
-        loginButton.addEventListener('click', loginUser);
-        usernameInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') loginUser();
-        });
+        // -------------------------------------------------------------------------
+        // A. KAZI YA JINA LA MTUMIAJI
+        // -------------------------------------------------------------------------
 
-        function loginUser() {
-            const username = usernameInput.value.trim();
-            if (username && username.length >= 2) {
-                currentUser = username;
-                currentUserDisplay.textContent = username;
-                
-                // Register user in database
-                usersRef.child(username).set({
-                    username: username,
-                    lastSeen: Date.now(),
-                    online: true
-                });
-
-                // Set up user presence
-                usersRef.child(username).onDisconnect().update({
-                    online: false,
-                    lastSeen: Date.now()
-                });
-
-                loginOverlay.style.display = 'none';
-                mainContainer.style.display = 'block';
-                loadUsers();
-                loadMessages();
-                setupTypingIndicator();
-                messageInput.focus();
-            } else {
-                showNotification('Username must be at least 2 characters');
+        // 1. Angalia kama jina tayari limehifadhiwa
+        function checkUsername() {
+            const storedUsername = localStorage.getItem('chatUsername');
+            if (storedUsername) {
+                currentUsername = storedUsername;
+                showChat();
             }
         }
 
-        // Load all registered users
-        function loadUsers() {
-            usersRef.on('value', (snapshot) => {
-                allUsers = snapshot.val() || {};
-                renderUserList();
-            });
+        // 2. Kazi ya Kuhifadhi Jina
+        setUsernameButton.addEventListener('click', () => {
+            const username = usernameInput.value.trim();
+            if (username && username.length > 2) {
+                currentUsername = username;
+                localStorage.setItem('chatUsername', username);
+                showChat();
+            } else {
+                alert("ACCESS DENIED: Jina linahitaji angalau herufi 3.");
+            }
+        });
+        
+        // 3. Onyesha Chat Box na Ficha Prompt
+        function showChat() {
+            usernamePrompt.style.display = 'none';
+            chatContainer.style.display = 'block';
+            onlineUsersContainer.style.display = 'block';
+            setupUserPresence(); // Setup user presence tracking
+            loadMessages(); // Anza kupakia ujumbe baada ya kuingia
+            messageInput.focus(); // Weka kishale kwenye sehemu ya kuandika
         }
 
-        function renderUserList() {
-            userList.innerHTML = '';
-            
-            Object.keys(allUsers).forEach(username => {
-                const user = allUsers[username];
-                const userItem = document.createElement('li');
-                userItem.className = `user-item ${user.online ? 'online' : 'offline'}`;
-                userItem.textContent = username;
-                userItem.addEventListener('click', () => {
-                    insertMention(username);
-                });
-                userList.appendChild(userItem);
-            });
-        }
+        // -------------------------------------------------------------------------
+        // B. KAZI YA CHAT (FIREBASE RTDB)
+        // -------------------------------------------------------------------------
 
-        // Message functionality
-        messageForm.addEventListener('submit', sendMessage);
-
-        function sendMessage(e) {
+        // 1. Kazi ya Kutuma Ujumbe
+        messageForm.addEventListener('submit', (e) => {
             e.preventDefault();
+            
             const messageText = messageInput.value.trim();
             
             if (messageText) {
-                const mentions = extractMentions(messageText);
+                // Detect mentions in the message
+                const mentions = detectMentions(messageText);
                 
+                // Tuma ujumbe, jina la mtumiaji, na timestamp
                 messagesRef.push({
-                    user: currentUser,
+                    user: currentUsername, // Hili ndilo jina la mtumiaji tulilohifadhi
                     text: messageText,
                     timestamp: Date.now(),
-                    mentions: mentions
+                    mentions: mentions // Store mentions in the message
                 });
 
-                messageInput.value = '';
-                hideSuggestions();
-                
-                // Clear typing indicator
-                typingRef.child(currentUser).remove();
+                messageInput.value = ''; // Safisha input
+                hideUserSuggestions(); // Hide suggestions after sending
             }
-        }
+        });
 
+        // 2. Kazi ya Kupokea Ujumbe
         function loadMessages() {
             messagesRef.on('child_added', (snapshot) => {
-                const message = snapshot.val();
-                displayMessage(message);
+                const messageData = snapshot.val();
+                
+                // Format ya Muda
+                const date = new Date(messageData.timestamp);
+                const timeString = date.toLocaleTimeString('en-US', {hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit'});
+                
+                // Unda HTML ya Ujumbe
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message');
+                
+                // Check if current user is mentioned
+                if (messageData.mentions && messageData.mentions.includes(currentUsername)) {
+                    messageElement.classList.add('mentioned');
+                    showMentionNotification(messageData.user);
+                }
+                
+                // Process message text to highlight mentions
+                const processedText = processMessageText(messageData.text);
+                
+                messageElement.innerHTML = `
+                    <span class="timestamp">[${timeString}]</span>
+                    <span class="username">${messageData.user}:</span> 
+                    ${processedText}
+                `;
+
+                // Ongeza na Shuka Chini
+                messagesContainer.appendChild(messageElement);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
             });
         }
-
-        function displayMessage(message) {
-            const messageElement = document.createElement('div');
-            messageElement.className = 'message';
-            
-            // Check if current user is mentioned
-            if (message.mentions && message.mentions.includes(currentUser)) {
-                messageElement.classList.add('mentioned');
-                showNotification(`You were mentioned by ${message.user}`);
-            }
-            
-            const timestamp = new Date(message.timestamp).toLocaleTimeString();
-            const processedText = processMessageText(message.text);
-            
-            messageElement.innerHTML = `
-                <div class="message-header">
-                    <span class="username">${message.user}</span>
-                    <span class="timestamp">${timestamp}</span>
-                </div>
-                <div class="message-body">${processedText}</div>
-            `;
-            
-            messagesContainer.appendChild(messageElement);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-
-        // Mention functionality
-        function extractMentions(text) {
+        
+        // 3. Detect mentions in message text
+        function detectMentions(text) {
             const mentionRegex = /@(\w+)/g;
             const mentions = [];
             let match;
@@ -568,61 +761,184 @@
             
             return mentions;
         }
-
+        
+        // 4. Process message text to highlight mentions
         function processMessageText(text) {
             return text.replace(/@(\w+)/g, '<span class="mention">@$1</span>');
         }
-
-        function insertMention(username) {
-            const currentText = messageInput.value;
-            const cursorPos = messageInput.selectionStart;
+        
+        // 5. Show mention notification
+        function showMentionNotification(mentionedBy) {
+            mentionNotification.textContent = `MENTIONED BY ${mentionedBy}`;
+            mentionNotification.style.display = 'block';
             
-            messageInput.value = currentText.substring(0, cursorPos) + `@${username} ` + currentText.substring(cursorPos);
-            messageInput.focus();
-            messageInput.selectionStart = messageInput.selectionEnd = cursorPos + username.length + 2;
-        }
-
-        // Typing indicator
-        function setupTypingIndicator() {
-            messageInput.addEventListener('input', () => {
-                typingRef.child(currentUser).set(true);
-                clearTimeout(typingTimeout);
-                typingTimeout = setTimeout(() => {
-                    typingRef.child(currentUser).remove();
-                }, 2000);
-            });
-
-            typingRef.on('child_added', (snapshot) => {
-                if (snapshot.key !== currentUser) {
-                    typingIndicator.textContent = `${snapshot.key} is typing...`;
-                }
-            });
-
-            typingRef.on('child_removed', (snapshot) => {
-                if (snapshot.key !== currentUser) {
-                    typingIndicator.textContent = '';
-                }
-            });
-        }
-
-        // Utility functions
-        function showNotification(text) {
-            notification.textContent = text;
-            notification.style.display = 'block';
             setTimeout(() => {
-                notification.style.display = 'none';
-            }, 3000);
+                mentionNotification.style.display = 'none';
+            }, 5000);
         }
-
-        function hideSuggestions() {
-            const suggestions = document.querySelector('.suggestions-box');
-            if (suggestions) {
-                suggestions.style.display = 'none';
+        
+        // -------------------------------------------------------------------------
+        // C. USER TAGGING FEATURES
+        // -------------------------------------------------------------------------
+        
+        // 1. Setup user presence tracking
+        function setupUserPresence() {
+            // Add current user to online users
+            const userRef = usersRef.child(currentUsername);
+            userRef.set({
+                username: currentUsername,
+                lastSeen: Date.now(),
+                online: true
+            });
+            
+            // Remove user when they disconnect
+            userRef.onDisconnect().remove();
+            
+            // Listen for online users
+            usersRef.on('child_added', (snapshot) => {
+                const userData = snapshot.val();
+                if (userData.username !== currentUsername) {
+                    onlineUsers[userData.username] = userData;
+                    updateUserSuggestions();
+                    updateOnlineUsersList();
+                }
+            });
+            
+            usersRef.on('child_removed', (snapshot) => {
+                const username = snapshot.key;
+                delete onlineUsers[username];
+                updateUserSuggestions();
+                updateOnlineUsersList();
+            });
+        }
+        
+        // 2. Update user suggestions for autocomplete
+        function updateUserSuggestions() {
+            userSuggestions = Object.keys(onlineUsers);
+        }
+        
+        // 3. Show user suggestions when typing @
+        messageInput.addEventListener('input', (e) => {
+            const cursorPosition = e.target.selectionStart;
+            const textBeforeCursor = e.target.value.substring(0, cursorPosition);
+            const lastAtIndex = textBeforeCursor.lastIndexOf('@');
+            
+            if (lastAtIndex !== -1) {
+                const searchTerm = textBeforeCursor.substring(lastAtIndex + 1);
+                showUserSuggestions(searchTerm, lastAtIndex);
+            } else {
+                hideUserSuggestions();
+            }
+        });
+        
+        // 4. Show user suggestions
+        function showUserSuggestions(searchTerm, position) {
+            const filteredUsers = userSuggestions.filter(user => 
+                user.toLowerCase().includes(searchTerm.toLowerCase()) && user !== currentUsername
+            );
+            
+            if (filteredUsers.length === 0) {
+                hideUserSuggestions();
+                return;
+            }
+            
+            userSuggestionsContainer.innerHTML = '';
+            filteredUsers.forEach(user => {
+                const suggestionElement = document.createElement('div');
+                suggestionElement.classList.add('userSuggestion');
+                suggestionElement.textContent = user;
+                suggestionElement.addEventListener('click', () => {
+                    selectUserSuggestion(user, position);
+                });
+                userSuggestionsContainer.appendChild(suggestionElement);
+            });
+            
+            userSuggestionsContainer.style.display = 'block';
+        }
+        
+        // 5. Hide user suggestions
+        function hideUserSuggestions() {
+            userSuggestionsContainer.style.display = 'none';
+        }
+        
+        // 6. Select user from suggestions
+        function selectUserSuggestion(username, position) {
+            const currentValue = messageInput.value;
+            const textBeforeCursor = currentValue.substring(0, position);
+            const textAfterCursor = currentValue.substring(messageInput.selectionStart);
+            
+            messageInput.value = textBeforeCursor + '@' + username + ' ' + textAfterCursor;
+            messageInput.focus();
+            messageInput.selectionStart = messageInput.selectionEnd = position + username.length + 2;
+            
+            hideUserSuggestions();
+        }
+        
+        // 7. Update online users list
+        function updateOnlineUsersList() {
+            onlineUsersContainer.innerHTML = '<h3>ONLINE USERS</h3>';
+            
+            // Add current user first
+            const currentUserElement = document.createElement('div');
+            currentUserElement.classList.add('onlineUser');
+            currentUserElement.innerHTML = `<span class="username">${currentUsername} (YOU)</span>`;
+            onlineUsersContainer.appendChild(currentUserElement);
+            
+            // Add other users
+            Object.keys(onlineUsers).forEach(username => {
+                if (username !== currentUsername) {
+                    const userElement = document.createElement('div');
+                    userElement.classList.add('onlineUser');
+                    userElement.innerHTML = `<span class="username">${username}</span>`;
+                    userElement.addEventListener('click', () => {
+                        insertUserMention(username);
+                    });
+                    onlineUsersContainer.appendChild(userElement);
+                }
+            });
+        }
+        
+        // 8. Insert user mention when clicking on online user
+        function insertUserMention(username) {
+            const currentValue = messageInput.value;
+            const cursorPosition = messageInput.selectionStart;
+            
+            messageInput.value = currentValue.substring(0, cursorPosition) + '@' + username + ' ' + currentValue.substring(cursorPosition);
+            messageInput.focus();
+            messageInput.selectionStart = messageInput.selectionEnd = cursorPosition + username.length + 2;
+        }
+        
+        // 9. Toggle online users panel
+        toggleUsersBtn.addEventListener('click', () => {
+            if (onlineUsersContainer.style.display === 'none') {
+                onlineUsersContainer.style.display = 'block';
+            } else {
+                onlineUsersContainer.style.display = 'none';
+            }
+        });
+        
+        // -------------------------------------------------------------------------
+        // D. VISUAL EFFECTS
+        // -------------------------------------------------------------------------
+        
+        // Create matrix-like falling lines
+        function createMatrixLines() {
+            for (let i = 0; i < 50; i++) {
+                const line = document.createElement('div');
+                line.classList.add('matrix-line');
+                line.style.left = `${Math.random() * 100}%`;
+                line.style.animationDuration = `${Math.random() * 5 + 3}s`;
+                line.style.animationDelay = `${Math.random() * 5}s`;
+                matrixLinesContainer.appendChild(line);
             }
         }
+        
+        // Initialize matrix lines
+        createMatrixLines();
+        
+        // ANZA: Fanya ukaguzi wa jina la mtumiaji mara tu ukurasa unapofunguliwa
+        checkUsername();
 
-        // Auto-focus on login input
-        usernameInput.focus();
     </script>
 </body>
-        </html>
+    </html>
