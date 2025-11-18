@@ -59,10 +59,28 @@
             color: #008800;
             margin-right: 5px;
         }
+        
+        /* Muonekano wa user aliye-tag */
+        .mention {
+            color: #FF9900; /* Rangi tofauti kwa user aliye-tag */
+            font-weight: bold;
+            text-shadow: 0 0 5px #FF9900;
+            background-color: rgba(255, 153, 0, 0.1);
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+        
+        /* Muonekano wa ujumbe ulio na mention */
+        .mentioned {
+            border-left: 3px solid #FF9900;
+            padding-left: 5px;
+            background-color: rgba(255, 153, 0, 0.05);
+        }
 
         /* Sehemu ya Kuandika Ujumbe */
         #messageForm {
             display: flex;
+            position: relative;
         }
         #messageInput {
             flex-grow: 1;
@@ -111,6 +129,88 @@
             border: 1px solid #00FF41;
             font-family: 'VT323', monospace;
         }
+        
+        /* Autocomplete ya user tagging */
+        #userSuggestions {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            width: 100%;
+            background-color: #0A0A0A;
+            border: 1px solid #00FF41;
+            border-bottom: none;
+            max-height: 150px;
+            overflow-y: auto;
+            display: none;
+            z-index: 10;
+        }
+        .userSuggestion {
+            padding: 8px 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #008800;
+        }
+        .userSuggestion:hover {
+            background-color: #008800;
+            color: #000000;
+        }
+        
+        /* Notification ya mention */
+        #mentionNotification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #FF9900;
+            color: #000000;
+            padding: 10px 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px #FF9900;
+            display: none;
+            z-index: 1001;
+            font-weight: bold;
+        }
+        
+        /* Online users panel */
+        #onlineUsers {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: #0A0A0A;
+            border: 1px solid #00FF41;
+            padding: 10px;
+            max-width: 200px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+        #onlineUsers h3 {
+            margin-top: 0;
+            border-bottom: 1px solid #00FF41;
+            padding-bottom: 5px;
+        }
+        .onlineUser {
+            padding: 5px;
+            margin-bottom: 5px;
+            border-bottom: 1px dashed #008800;
+            cursor: pointer;
+        }
+        .onlineUser:hover {
+            background-color: #008800;
+            color: #000000;
+        }
+        
+        /* Toggle button for online users */
+        #toggleUsersBtn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: #008800;
+            color: #000000;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-family: 'VT323', monospace;
+            z-index: 100;
+        }
     </style>
 </head>
 <body>
@@ -121,13 +221,18 @@
         <button id="setUsernameButton">ENTER SYSTEM</button>
     </div>
 
+    <button id="toggleUsersBtn">USERS ONLINE</button>
+    <div id="onlineUsers"></div>
+    
+    <div id="mentionNotification"></div>
+
     <div id="chat-container" style="display:none;">
         <h1>DarkX Official: Secret Chatting Box</h1>
         
-        <div id="messages">
-            </div>
+        <div id="messages"></div>
 
         <form id="messageForm">
+            <div id="userSuggestions"></div>
             <input type="text" id="messageInput" placeholder=">> SEND SIGNAL..." required>
             <button type="submit">TRANSMIT</button>
         </form>
@@ -152,9 +257,12 @@
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-        const messagesRef = database.ref('messages'); // Badilisha 'messages' kwa jina unalotaka kwenye RTDB
+        const messagesRef = database.ref('messages');
+        const usersRef = database.ref('users'); // Realtime database for online users
 
         let currentUsername = '';
+        let onlineUsers = {}; // Store online users
+        let userSuggestions = []; // Store user suggestions for autocomplete
 
         // Marejeo ya HTML Elements
         const usernamePrompt = document.getElementById('username-prompt');
@@ -164,6 +272,10 @@
         const messageForm = document.getElementById('messageForm');
         const messageInput = document.getElementById('messageInput');
         const messagesContainer = document.getElementById('messages');
+        const userSuggestionsContainer = document.getElementById('userSuggestions');
+        const mentionNotification = document.getElementById('mentionNotification');
+        const onlineUsersContainer = document.getElementById('onlineUsers');
+        const toggleUsersBtn = document.getElementById('toggleUsersBtn');
 
         // -------------------------------------------------------------------------
         // A. KAZI YA JINA LA MTUMIAJI
@@ -194,6 +306,8 @@
         function showChat() {
             usernamePrompt.style.display = 'none';
             chatContainer.style.display = 'block';
+            onlineUsersContainer.style.display = 'block';
+            setupUserPresence(); // Setup user presence tracking
             loadMessages(); // Anza kupakia ujumbe baada ya kuingia
             messageInput.focus(); // Weka kishale kwenye sehemu ya kuandika
         }
@@ -209,14 +323,19 @@
             const messageText = messageInput.value.trim();
             
             if (messageText) {
+                // Detect mentions in the message
+                const mentions = detectMentions(messageText);
+                
                 // Tuma ujumbe, jina la mtumiaji, na timestamp
                 messagesRef.push({
                     user: currentUsername, // Hili ndilo jina la mtumiaji tulilohifadhi
                     text: messageText,
-                    timestamp: Date.now()
+                    timestamp: Date.now(),
+                    mentions: mentions // Store mentions in the message
                 });
 
                 messageInput.value = ''; // Safisha input
+                hideUserSuggestions(); // Hide suggestions after sending
             }
         });
 
@@ -233,10 +352,19 @@
                 const messageElement = document.createElement('div');
                 messageElement.classList.add('message');
                 
+                // Check if current user is mentioned
+                if (messageData.mentions && messageData.mentions.includes(currentUsername)) {
+                    messageElement.classList.add('mentioned');
+                    showMentionNotification(messageData.user);
+                }
+                
+                // Process message text to highlight mentions
+                const processedText = processMessageText(messageData.text);
+                
                 messageElement.innerHTML = `
                     <span class="timestamp">[${timeString}]</span>
                     <span class="username">${messageData.user}:</span> 
-                    ${messageData.text}
+                    ${processedText}
                 `;
 
                 // Ongeza na Shuka Chini
@@ -245,9 +373,177 @@
             });
         }
         
+        // 3. Detect mentions in message text
+        function detectMentions(text) {
+            const mentionRegex = /@(\w+)/g;
+            const mentions = [];
+            let match;
+            
+            while ((match = mentionRegex.exec(text)) !== null) {
+                mentions.push(match[1]);
+            }
+            
+            return mentions;
+        }
+        
+        // 4. Process message text to highlight mentions
+        function processMessageText(text) {
+            return text.replace(/@(\w+)/g, '<span class="mention">@$1</span>');
+        }
+        
+        // 5. Show mention notification
+        function showMentionNotification(mentionedBy) {
+            mentionNotification.textContent = `MENTIONED BY ${mentionedBy}`;
+            mentionNotification.style.display = 'block';
+            
+            setTimeout(() => {
+                mentionNotification.style.display = 'none';
+            }, 5000);
+        }
+        
+        // -------------------------------------------------------------------------
+        // C. USER TAGGING FEATURES
+        // -------------------------------------------------------------------------
+        
+        // 1. Setup user presence tracking
+        function setupUserPresence() {
+            // Add current user to online users
+            const userRef = usersRef.child(currentUsername);
+            userRef.set({
+                username: currentUsername,
+                lastSeen: Date.now(),
+                online: true
+            });
+            
+            // Remove user when they disconnect
+            userRef.onDisconnect().remove();
+            
+            // Listen for online users
+            usersRef.on('child_added', (snapshot) => {
+                const userData = snapshot.val();
+                if (userData.username !== currentUsername) {
+                    onlineUsers[userData.username] = userData;
+                    updateUserSuggestions();
+                    updateOnlineUsersList();
+                }
+            });
+            
+            usersRef.on('child_removed', (snapshot) => {
+                const username = snapshot.key;
+                delete onlineUsers[username];
+                updateUserSuggestions();
+                updateOnlineUsersList();
+            });
+        }
+        
+        // 2. Update user suggestions for autocomplete
+        function updateUserSuggestions() {
+            userSuggestions = Object.keys(onlineUsers);
+        }
+        
+        // 3. Show user suggestions when typing @
+        messageInput.addEventListener('input', (e) => {
+            const cursorPosition = e.target.selectionStart;
+            const textBeforeCursor = e.target.value.substring(0, cursorPosition);
+            const lastAtIndex = textBeforeCursor.lastIndexOf('@');
+            
+            if (lastAtIndex !== -1) {
+                const searchTerm = textBeforeCursor.substring(lastAtIndex + 1);
+                showUserSuggestions(searchTerm, lastAtIndex);
+            } else {
+                hideUserSuggestions();
+            }
+        });
+        
+        // 4. Show user suggestions
+        function showUserSuggestions(searchTerm, position) {
+            const filteredUsers = userSuggestions.filter(user => 
+                user.toLowerCase().includes(searchTerm.toLowerCase()) && user !== currentUsername
+            );
+            
+            if (filteredUsers.length === 0) {
+                hideUserSuggestions();
+                return;
+            }
+            
+            userSuggestionsContainer.innerHTML = '';
+            filteredUsers.forEach(user => {
+                const suggestionElement = document.createElement('div');
+                suggestionElement.classList.add('userSuggestion');
+                suggestionElement.textContent = user;
+                suggestionElement.addEventListener('click', () => {
+                    selectUserSuggestion(user, position);
+                });
+                userSuggestionsContainer.appendChild(suggestionElement);
+            });
+            
+            userSuggestionsContainer.style.display = 'block';
+        }
+        
+        // 5. Hide user suggestions
+        function hideUserSuggestions() {
+            userSuggestionsContainer.style.display = 'none';
+        }
+        
+        // 6. Select user from suggestions
+        function selectUserSuggestion(username, position) {
+            const currentValue = messageInput.value;
+            const textBeforeCursor = currentValue.substring(0, position);
+            const textAfterCursor = currentValue.substring(messageInput.selectionStart);
+            
+            messageInput.value = textBeforeCursor + '@' + username + ' ' + textAfterCursor;
+            messageInput.focus();
+            messageInput.selectionStart = messageInput.selectionEnd = position + username.length + 2;
+            
+            hideUserSuggestions();
+        }
+        
+        // 7. Update online users list
+        function updateOnlineUsersList() {
+            onlineUsersContainer.innerHTML = '<h3>ONLINE USERS</h3>';
+            
+            // Add current user first
+            const currentUserElement = document.createElement('div');
+            currentUserElement.classList.add('onlineUser');
+            currentUserElement.innerHTML = `<span class="username">${currentUsername} (YOU)</span>`;
+            onlineUsersContainer.appendChild(currentUserElement);
+            
+            // Add other users
+            Object.keys(onlineUsers).forEach(username => {
+                if (username !== currentUsername) {
+                    const userElement = document.createElement('div');
+                    userElement.classList.add('onlineUser');
+                    userElement.innerHTML = `<span class="username">${username}</span>`;
+                    userElement.addEventListener('click', () => {
+                        insertUserMention(username);
+                    });
+                    onlineUsersContainer.appendChild(userElement);
+                }
+            });
+        }
+        
+        // 8. Insert user mention when clicking on online user
+        function insertUserMention(username) {
+            const currentValue = messageInput.value;
+            const cursorPosition = messageInput.selectionStart;
+            
+            messageInput.value = currentValue.substring(0, cursorPosition) + '@' + username + ' ' + currentValue.substring(cursorPosition);
+            messageInput.focus();
+            messageInput.selectionStart = messageInput.selectionEnd = cursorPosition + username.length + 2;
+        }
+        
+        // 9. Toggle online users panel
+        toggleUsersBtn.addEventListener('click', () => {
+            if (onlineUsersContainer.style.display === 'none') {
+                onlineUsersContainer.style.display = 'block';
+            } else {
+                onlineUsersContainer.style.display = 'none';
+            }
+        });
+        
         // ANZA: Fanya ukaguzi wa jina la mtumiaji mara tu ukurasa unapofunguliwa
         checkUsername();
 
     </script>
 </body>
-</html>
+    </html>
