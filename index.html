@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DarkX Official: Secret Chatting Box</title>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+        body {
+            background-color: #000000; /* Nyeusi */
+            color: #00FF41; /* Kijani cha Matrix */
+            font-family: 'VT323', monospace; /* Font ya kipekee */
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #33FF33;
+            text-shadow: 0 0 10px #00FF41;
+            border-bottom: 2px solid #00FF41;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+        #chat-container {
+            width: 90%;
+            max-width: 800px;
+            background-color: #0A0A0A; /* Nyeusi kidogo */
+            border: 2px solid #00FF41;
+            box-shadow: 0 0 20px #00FF41;
+            padding: 15px;
+        }
+
+        /* Box ya Ujumbe Uliotunzwa */
+        #messages {
+            height: 400px;
+            overflow-y: scroll;
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px dashed #008800;
+        }
+
+        /* Muonekano wa Ujumbe Mmoja */
+        .message {
+            margin-bottom: 8px;
+            word-wrap: break-word; /* Hakikisha ujumbe mrefu unakaa ndani */
+        }
+        .username {
+            color: #FFFFFF; /* Jina lionekane zaidi */
+            font-weight: bold;
+            text-shadow: 0 0 5px #FFFFFF;
+        }
+        .timestamp {
+            font-size: 0.8em;
+            color: #008800;
+            margin-right: 5px;
+        }
+
+        /* Sehemu ya Kuandika Ujumbe */
+        #messageForm {
+            display: flex;
+        }
+        #messageInput {
+            flex-grow: 1;
+            padding: 10px;
+            border: none;
+            background-color: #000000;
+            color: #00FF41;
+            font-family: 'VT323', monospace;
+            font-size: 1.2em;
+            border-bottom: 1px solid #00FF41;
+        }
+        #messageForm button {
+            padding: 10px 20px;
+            background-color: #008800;
+            color: #000000;
+            border: none;
+            cursor: pointer;
+            font-family: 'VT323', monospace;
+            font-size: 1.2em;
+            transition: background-color 0.3s;
+        }
+        #messageForm button:hover {
+            background-color: #00FF41;
+        }
+        
+        /* Box ya Kujaza Jina */
+        #username-prompt {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            flex-direction: column;
+        }
+        #username-prompt input, #username-prompt button {
+            padding: 15px;
+            margin: 10px;
+            font-size: 1.5em;
+            background-color: #0A0A0A;
+            color: #00FF41;
+            border: 1px solid #00FF41;
+            font-family: 'VT323', monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="username-prompt">
+        <h1>ACCESS DENIED: IDENTIFY SELF</h1>
+        <input type="text" id="usernameInput" placeholder="Enter Your Alias (Jina la Siri)" required>
+        <button id="setUsernameButton">ENTER SYSTEM</button>
+    </div>
+
+    <div id="chat-container" style="display:none;">
+        <h1>DarkX Official: Secret Chatting Box</h1>
+        
+        <div id="messages">
+            </div>
+
+        <form id="messageForm">
+            <input type="text" id="messageInput" placeholder=">> SEND SIGNAL..." required>
+            <button type="submit">TRANSMIT</button>
+        </form>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        // =========================================================================
+        // !!! MUHIMU: BADILISHA HAPA KWA MIPANGILIO YAKO HALISI YA FIREBASE !!!
+        // =========================================================================
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://darkweb-chat-c0c51-default-rtdb.firebaseio.com", 
+            projectId: "darkweb-chat-c0c51",
+            // Weka data nyingine kama zipo
+        };
+        // =========================================================================
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const messagesRef = database.ref('messages'); // Badilisha 'messages' kwa jina unalotaka kwenye RTDB
+
+        let currentUsername = '';
+
+        // Marejeo ya HTML Elements
+        const usernamePrompt = document.getElementById('username-prompt');
+        const usernameInput = document.getElementById('usernameInput');
+        const setUsernameButton = document.getElementById('setUsernameButton');
+        const chatContainer = document.getElementById('chat-container');
+        const messageForm = document.getElementById('messageForm');
+        const messageInput = document.getElementById('messageInput');
+        const messagesContainer = document.getElementById('messages');
+
+        // -------------------------------------------------------------------------
+        // A. KAZI YA JINA LA MTUMIAJI
+        // -------------------------------------------------------------------------
+
+        // 1. Angalia kama jina tayari limehifadhiwa
+        function checkUsername() {
+            const storedUsername = localStorage.getItem('chatUsername');
+            if (storedUsername) {
+                currentUsername = storedUsername;
+                showChat();
+            }
+        }
+
+        // 2. Kazi ya Kuhifadhi Jina
+        setUsernameButton.addEventListener('click', () => {
+            const username = usernameInput.value.trim();
+            if (username && username.length > 2) {
+                currentUsername = username;
+                localStorage.setItem('chatUsername', username);
+                showChat();
+            } else {
+                alert("ACCESS DENIED: Jina linahitaji angalau herufi 3.");
+            }
+        });
+        
+        // 3. Onyesha Chat Box na Ficha Prompt
+        function showChat() {
+            usernamePrompt.style.display = 'none';
+            chatContainer.style.display = 'block';
+            loadMessages(); // Anza kupakia ujumbe baada ya kuingia
+            messageInput.focus(); // Weka kishale kwenye sehemu ya kuandika
+        }
+
+        // -------------------------------------------------------------------------
+        // B. KAZI YA CHAT (FIREBASE RTDB)
+        // -------------------------------------------------------------------------
+
+        // 1. Kazi ya Kutuma Ujumbe
+        messageForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const messageText = messageInput.value.trim();
+            
+            if (messageText) {
+                // Tuma ujumbe, jina la mtumiaji, na timestamp
+                messagesRef.push({
+                    user: currentUsername, // Hili ndilo jina la mtumiaji tulilohifadhi
+                    text: messageText,
+                    timestamp: Date.now()
+                });
+
+                messageInput.value = ''; // Safisha input
+            }
+        });
+
+        // 2. Kazi ya Kupokea Ujumbe
+        function loadMessages() {
+            messagesRef.on('child_added', (snapshot) => {
+                const messageData = snapshot.val();
+                
+                // Format ya Muda
+                const date = new Date(messageData.timestamp);
+                const timeString = date.toLocaleTimeString('en-US', {hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit'});
+                
+                // Unda HTML ya Ujumbe
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message');
+                
+                messageElement.innerHTML = `
+                    <span class="timestamp">[${timeString}]</span>
+                    <span class="username">${messageData.user}:</span> 
+                    ${messageData.text}
+                `;
+
+                // Ongeza na Shuka Chini
+                messagesContainer.appendChild(messageElement);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            });
+        }
+        
+        // ANZA: Fanya ukaguzi wa jina la mtumiaji mara tu ukurasa unapofunguliwa
+        checkUsername();
+
+    </script>
+</body>
+</html>
