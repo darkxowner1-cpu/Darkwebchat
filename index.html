@@ -3,446 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DarkX Official: Secure Chat</title>
+    <title>DarkX Official: Secret Chatting Box</title>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-        @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
-
-        :root {
-            --primary-color: #6c5ce7; /* Ua la Kijani lililoboreshwa */
-            --secondary-color: #fd79a8; /* Waridi nyekundu */
-            --accent-color: #00cec9; /* Cyan ya kuvutia */
-            --bg-color: #0f0f23; /* Mazingira ya giza */
-            --chat-bg: #1a1a2e; /* Mazingira ya chat */
-            --card-bg: #16213e; /* Mazingira ya kadi */
-            --text-color: #e2e2e2; /* Maandishi mepesi */
-            --text-secondary: #a0a0a0; /* Maandishi ya pili */
-            --timestamp-color: #6c757d; /* Rangi ya muda */
-            --owner-color: #feca57; /* Dhahabu kwa mmiliki */
-            --success-color: #00b894; /* Kijani cha mafanikio */
-            --warning-color: #fdcb6e; /* Njano ya tahadhari */
-            --danger-color: #e84393; /* Waridi hatari */
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
         body {
-            background: linear-gradient(135deg, var(--bg-color) 0%, #1a1a2e 100%);
-            color: var(--text-color);
-            font-family: 'Poppins', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background-color: #000000; /* Nyeusi */
+            color: #00FF41; /* Kijani cha Matrix */
+            font-family: 'VT323', monospace; /* Font ya kipekee */
+            margin: 0;
             padding: 20px;
-        }
-
-        h1 {
-            color: var(--primary-color);
-            text-align: center;
-            margin-bottom: 20px;
-            font-weight: 700;
-            font-size: 2rem;
-            text-shadow: 0 2px 10px rgba(108, 92, 231, 0.3);
-            position: relative;
-            padding-bottom: 10px;
-        }
-
-        h1:after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
-            border-radius: 3px;
-        }
-
-        #chat-container {
-            width: 100%;
-            max-width: 800px;
-            height: 85vh;
-            background-color: var(--chat-bg);
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             display: flex;
             flex-direction: column;
-            overflow: hidden;
-            position: relative;
-            border: 1px solid rgba(108, 92, 231, 0.2);
+            align-items: center;
+        }
+        h1 {
+            color: #33FF33;
+            text-shadow: 0 0 10px #00FF41;
+            border-bottom: 2px solid #00FF41;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+        #chat-container {
+            width: 90%;
+            max-width: 800px;
+            background-color: #0A0A0A; /* Nyeusi kidogo */
+            border: 2px solid #00FF41;
+            box-shadow: 0 0 20px #00FF41;
+            padding: 15px;
         }
 
-        /* Kigezo cha Kuingia */
+        /* Box ya Ujumbe Uliotunzwa */
+        #messages {
+            height: 400px;
+            overflow-y: scroll;
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px dashed #008800;
+        }
+
+        /* Muonekano wa Ujumbe Mmoja */
+        .message {
+            margin-bottom: 8px;
+            word-wrap: break-word; /* Hakikisha ujumbe mrefu unakaa ndani */
+        }
+        .username {
+            color: #FFFFFF; /* Jina lionekane zaidi */
+            font-weight: bold;
+            text-shadow: 0 0 5px #FFFFFF;
+        }
+        .timestamp {
+            font-size: 0.8em;
+            color: #008800;
+            margin-right: 5px;
+        }
+
+        /* Sehemu ya Kuandika Ujumbe */
+        #messageForm {
+            display: flex;
+        }
+        #messageInput {
+            flex-grow: 1;
+            padding: 10px;
+            border: none;
+            background-color: #000000;
+            color: #00FF41;
+            font-family: 'VT323', monospace;
+            font-size: 1.2em;
+            border-bottom: 1px solid #00FF41;
+        }
+        #messageForm button {
+            padding: 10px 20px;
+            background-color: #008800;
+            color: #000000;
+            border: none;
+            cursor: pointer;
+            font-family: 'VT323', monospace;
+            font-size: 1.2em;
+            transition: background-color 0.3s;
+        }
+        #messageForm button:hover {
+            background-color: #00FF41;
+        }
+        
+        /* Box ya Kujaza Jina */
         #username-prompt {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            background: rgba(0, 0, 0, 0.95);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 1000;
             flex-direction: column;
-            text-align: center;
-            padding: 20px;
         }
-
-        #username-prompt h1 {
-            color: var(--accent-color);
-            margin-bottom: 30px;
-            font-size: 2.5rem;
-            letter-spacing: 1px;
-        }
-
-        #username-prompt p {
-            color: var(--text-secondary);
-            margin-bottom: 40px;
-            max-width: 500px;
-            line-height: 1.6;
-        }
-
-        #username-prompt input {
-            padding: 15px 20px;
-            margin: 10px;
-            font-size: 1.1em;
-            border-radius: 10px;
-            font-family: 'Poppins', sans-serif;
-            border: 2px solid rgba(108, 92, 231, 0.3);
-            background: rgba(26, 26, 46, 0.7);
-            color: var(--text-color);
-            width: 80%;
-            max-width: 400px;
-            transition: all 0.3s ease;
-        }
-
-        #username-prompt input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
-        }
-
-        #username-prompt button {
-            padding: 15px 30px;
-            margin: 10px;
-            font-size: 1.1em;
-            border-radius: 10px;
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
-        }
-
-        #username-prompt button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(108, 92, 231, 0.6);
-        }
-
-        /* Kichupo cha Menyu */
-        #menu-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(26, 26, 46, 0.7);
-            border: 1px solid rgba(108, 92, 231, 0.3);
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1.2em;
-            color: var(--primary-color);
-            z-index: 5;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.3s ease;
-        }
-
-        #menu-toggle:hover {
-            background: rgba(108, 92, 231, 0.1);
-            transform: scale(1.05);
-        }
-
-        /* Sanduku la Watumiaji Waliopo Mtandaoni (Upande) */
-        #online-users-box {
-            position: absolute;
-            top: 0;
-            right: -300px;
-            width: 300px;
-            height: 100%;
-            padding: 20px;
-            background-color: var(--card-bg);
-            border-left: 1px solid rgba(108, 92, 231, 0.2);
-            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
-            transition: right 0.3s ease-in-out;
-            z-index: 4;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        #online-users-box.open {
-            right: 0;
-        }
-
-        #online-users-box h3 {
-            margin-top: 0;
-            color: var(--accent-color);
-            border-bottom: 1px solid rgba(108, 92, 231, 0.2);
-            padding-bottom: 15px;
-            margin-bottom: 15px;
-            font-size: 1.2em;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        #onlineUsersList {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            overflow-y: auto;
-            flex-grow: 1;
-        }
-
-        #onlineUsersList li {
-            padding: 12px 15px;
-            color: var(--text-color);
-            cursor: pointer;
-            transition: all 0.2s;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            margin-bottom: 5px;
-            display: flex;
-            align-items: center;
-        }
-
-        #onlineUsersList li:before {
-            content: '';
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: var(--success-color);
-            margin-right: 10px;
-        }
-
-        #onlineUsersList li:hover {
-            background-color: rgba(108, 92, 231, 0.1);
-            transform: translateX(5px);
-        }
-
-        .owner-online {
-            color: var(--owner-color) !important;
-            font-weight: 600;
-            background: rgba(254, 202, 87, 0.1) !important;
-        }
-
-        .owner-online:before {
-            background-color: var(--owner-color) !important;
-        }
-
-        /* Sehemu ya Ujumbe */
-        #messages {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding: 20px;
-            padding-right: 10px;
-            margin-bottom: 0;
-            background-color: var(--chat-bg);
-        }
-
-        /* Muonekano wa Ujumbe */
-        .message {
-            margin-bottom: 15px;
-            word-wrap: break-word;
-            line-height: 1.5;
-            padding: 12px 15px;
-            border-radius: 12px;
-            background: rgba(26, 26, 46, 0.5);
-            border-left: 3px solid var(--primary-color);
-            transition: all 0.2s ease;
-        }
-
-        .message:hover {
-            background: rgba(26, 26, 46, 0.7);
-            transform: translateX(3px);
-        }
-
-        /* Rangi ya Kawaida ya Jina */
-        .username {
-            color: var(--primary-color);
-            font-weight: 600;
-            margin-right: 5px;
-        }
-
-        /* Rangi ya Jina la Mmiliki */
-        .owner-message {
-            border-left-color: var(--owner-color);
-            background: rgba(254, 202, 87, 0.05);
-        }
-
-        .owner-message .username {
-            color: var(--owner-color);
-            font-weight: 700;
-        }
-
-        /* Muonekano wa Tegi */
-        .tag-user {
-            color: var(--secondary-color);
-            font-weight: 600;
-            background-color: rgba(253, 121, 168, 0.1);
-            padding: 2px 6px;
-            border-radius: 4px;
-        }
-
-        .timestamp {
-            font-size: 0.75em;
-            color: var(--timestamp-color);
-            margin-right: 8px;
-            font-weight: 300;
-        }
-
-        /* Sehemu ya Kuandika Ujumbe (Ingizo/Kitufe) */
-        #messageForm {
-            display: flex;
-            border-top: 1px solid rgba(108, 92, 231, 0.2);
+        #username-prompt input, #username-prompt button {
             padding: 15px;
-            background-color: var(--card-bg);
-        }
-
-        #messageInput {
-            flex-grow: 1;
-            padding: 12px 15px;
-            border: 1px solid rgba(108, 92, 231, 0.3);
-            border-radius: 10px;
-            margin-right: 10px;
-            font-family: 'Poppins', sans-serif;
-            font-size: 1em;
-            background: rgba(26, 26, 46, 0.7);
-            color: var(--text-color);
-            transition: all 0.3s ease;
-        }
-
-        #messageInput:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.2);
-        }
-
-        #messageForm button {
-            padding: 12px 20px;
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-            color: #ffffff;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-family: 'Poppins', sans-serif;
-            font-size: 1em;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(108, 92, 231, 0.3);
-        }
-
-        #messageForm button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(108, 92, 231, 0.4);
-        }
-
-        /* Uboreshaji wa Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(26, 26, 46, 0.5);
-            border-radius: 3px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary-color);
-            border-radius: 3px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--accent-color);
-        }
-
-        /* Uwiano wa Kifaa */
-        @media (max-width: 768px) {
-            #chat-container {
-                height: 90vh;
-                border-radius: 12px;
-            }
-            
-            #online-users-box {
-                width: 250px;
-                right: -250px;
-            }
-            
-            h1 {
-                font-size: 1.6rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            #chat-container {
-                height: 95vh;
-            }
-            
-            #online-users-box {
-                width: 85%;
-                right: -85%;
-            }
-            
-            h1 {
-                font-size: 1.4rem;
-            }
-            
-            #username-prompt h1 {
-                font-size: 2rem;
-            }
+            margin: 10px;
+            font-size: 1.5em;
+            background-color: #0A0A0A;
+            color: #00FF41;
+            border: 1px solid #00FF41;
+            font-family: 'VT323', monospace;
         }
     </style>
 </head>
 <body>
 
     <div id="username-prompt">
-        <h1>DARKX SECURE CHAT</h1>
-        <p>Ingiza jina lako la siri kujiunga na mfumo wa mawasiliano salama</p>
-        <input type="text" id="usernameInput" placeholder="Enter Your Alias" required>
+        <h1>ACCESS DENIED: IDENTIFY SELF</h1>
+        <input type="text" id="usernameInput" placeholder="Enter Your Alias (Jina la Siri)" required>
         <button id="setUsernameButton">ENTER SYSTEM</button>
     </div>
 
     <div id="chat-container" style="display:none;">
-        <h1>DarkX Official: Secure Chat</h1>
-
-        <button id="menu-toggle"><i class="fas fa-bars"></i></button>
-
-        <div id="online-users-box">
-            <h3>AGENTS ONLINE <span id="onlineUsersCount">(0)</span></h3>
-            <ul id="onlineUsersList">
-            </ul>
-        </div>
+        <h1>DarkX Official: Secret Chatting Box</h1>
         
         <div id="messages">
-        </div>
+            </div>
 
         <form id="messageForm">
-            <input type="text" id="messageInput" placeholder="Type your message..." required>
-            <button type="submit">SEND</button>
+            <input type="text" id="messageInput" placeholder=">> SEND SIGNAL..." required>
+            <button type="submit">TRANSMIT</button>
         </form>
     </div>
 
@@ -458,20 +145,18 @@
             authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
             databaseURL: "https://darkweb-chat-c0c51-default-rtdb.firebaseio.com", 
             projectId: "darkweb-chat-c0c51",
+            // Weka data nyingine kama zipo
         };
         // =========================================================================
-        
-        // Jina la Mmiliki
-        const OWNER_USERNAME = "DarkX👑";
 
-        // Anzisha Firebase
+        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-        const messagesRef = database.ref('messages');
-        
+        const messagesRef = database.ref('messages'); // Badilisha 'messages' kwa jina unalotaka kwenye RTDB
+
         let currentUsername = '';
 
-        // Marejeo ya Vipengele vya HTML
+        // Marejeo ya HTML Elements
         const usernamePrompt = document.getElementById('username-prompt');
         const usernameInput = document.getElementById('usernameInput');
         const setUsernameButton = document.getElementById('setUsernameButton');
@@ -479,112 +164,79 @@
         const messageForm = document.getElementById('messageForm');
         const messageInput = document.getElementById('messageInput');
         const messagesContainer = document.getElementById('messages');
-        const onlineUsersList = document.getElementById('onlineUsersList');
-        const onlineUsersCount = document.getElementById('onlineUsersCount');
-        const onlineUsersBox = document.getElementById('online-users-box');
-        const menuToggle = document.getElementById('menu-toggle');
 
         // -------------------------------------------------------------------------
-        // A. KAZI YA JINA LA MTUMIAJI & KUINGIA
+        // A. KAZI YA JINA LA MTUMIAJI
         // -------------------------------------------------------------------------
 
+        // 1. Angalia kama jina tayari limehifadhiwa
         function checkUsername() {
             const storedUsername = localStorage.getItem('chatUsername');
             if (storedUsername) {
-                checkIfNameIsAvailable(storedUsername, true); 
+                currentUsername = storedUsername;
+                showChat();
             }
         }
 
-        function checkIfNameIsAvailable(requestedUsername, isStored = false) {
-            if (requestedUsername.length < 3) {
-                alert("Jina linahitaji angalau herufi 3.");
-                return;
-            }
-            if (requestedUsername.toLowerCase() === OWNER_USERNAME.toLowerCase() && requestedUsername !== OWNER_USERNAME) {
-                alert(`Jina "${requestedUsername}" linafanana na Mmiliki. Tafadhali chagua jina lingine.`);
-                return;
-            }
-
-            // Hakiki kama jina tayari linatumika
-            database.ref('online_users/' + requestedUsername).once('value', (snapshot) => {
-                if (snapshot.exists() && !isStored) {
-                    alert(`Jina la mtumiaji "${requestedUsername}" tayari linatumika. Tafadhali chagua jina lingine.`);
-                } else {
-                    currentUsername = requestedUsername;
-                    localStorage.setItem('chatUsername', requestedUsername);
-                    showChat();
-                }
-            });
-        }
-
+        // 2. Kazi ya Kuhifadhi Jina
         setUsernameButton.addEventListener('click', () => {
-            const requestedUsername = usernameInput.value.trim();
-            checkIfNameIsAvailable(requestedUsername, false);
+            const username = usernameInput.value.trim();
+            if (username && username.length > 2) {
+                currentUsername = username;
+                localStorage.setItem('chatUsername', username);
+                showChat();
+            } else {
+                alert("ACCESS DENIED: Jina linahitaji angalau herufi 3.");
+            }
         });
         
-        // Onyesha Chat Box na Firebase Presence
+        // 3. Onyesha Chat Box na Ficha Prompt
         function showChat() {
             usernamePrompt.style.display = 'none';
-            chatContainer.style.display = 'flex';
-            
-            // --- FIREBASE PRESENCE (ONLINE STATUS) ---
-            const userRef = database.ref('online_users/' + currentUsername);
-            
-            userRef.onDisconnect().remove();
-            userRef.set(true);
-
-            loadMessages();
-            loadOnlineUsers(); 
-            messageInput.focus();
+            chatContainer.style.display = 'block';
+            loadMessages(); // Anza kupakia ujumbe baada ya kuingia
+            messageInput.focus(); // Weka kishale kwenye sehemu ya kuandika
         }
 
         // -------------------------------------------------------------------------
         // B. KAZI YA CHAT (FIREBASE RTDB)
         // -------------------------------------------------------------------------
 
-        // Tuma Ujumbe
+        // 1. Kazi ya Kutuma Ujumbe
         messageForm.addEventListener('submit', (e) => {
             e.preventDefault();
             
             const messageText = messageInput.value.trim();
             
             if (messageText) {
+                // Tuma ujumbe, jina la mtumiaji, na timestamp
                 messagesRef.push({
-                    user: currentUsername, 
+                    user: currentUsername, // Hili ndilo jina la mtumiaji tulilohifadhi
                     text: messageText,
                     timestamp: Date.now()
                 });
 
-                messageInput.value = ''; 
+                messageInput.value = ''; // Safisha input
             }
         });
 
-        // Pokewa Ujumbe na Uhakiki wa Mmiliki
+        // 2. Kazi ya Kupokea Ujumbe
         function loadMessages() {
             messagesRef.on('child_added', (snapshot) => {
                 const messageData = snapshot.val();
                 
+                // Format ya Muda
                 const date = new Date(messageData.timestamp);
-                const timeString = date.toLocaleTimeString('en-US', {hour12: false, hour: '2-digit', minute: '2-digit'});
+                const timeString = date.toLocaleTimeString('en-US', {hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit'});
                 
-                const isOwner = messageData.user === OWNER_USERNAME;
-                
-                // Kazi ya Ku-Tag
-                let formattedText = messageData.text.replace(/@(\w+)/g, (match, username) => {
-                    return `<span class="tag-user">@${username}</span>`;
-                });
-
                 // Unda HTML ya Ujumbe
                 const messageElement = document.createElement('div');
                 messageElement.classList.add('message');
-                if (isOwner) {
-                    messageElement.classList.add('owner-message');
-                }
                 
                 messageElement.innerHTML = `
-                    <span class="timestamp">${timeString}</span>
-                    <span class="username">${messageData.user}</span>: 
-                    ${formattedText}
+                    <span class="timestamp">[${timeString}]</span>
+                    <span class="username">${messageData.user}:</span> 
+                    ${messageData.text}
                 `;
 
                 // Ongeza na Shuka Chini
@@ -592,73 +244,10 @@
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
             });
         }
-
-        // -------------------------------------------------------------------------
-        // C. KAZI YA ORODHA YA WATUMIAJI WALIOPO & KUTEGI
-        // -------------------------------------------------------------------------
-        function loadOnlineUsers() {
-            database.ref('online_users').on('value', (snapshot) => {
-                onlineUsersList.innerHTML = '';
-                let count = 0;
-
-                snapshot.forEach((childSnapshot) => {
-                    const username = childSnapshot.key;
-                    count++;
-                    
-                    const li = document.createElement('li');
-                    li.textContent = username;
-                    li.setAttribute('data-username', username);
-                    
-                    // Tofautisha Mmiliki kwenye orodha
-                    if (username === OWNER_USERNAME) {
-                         li.classList.add('owner-online'); 
-                    }
-
-                    // Msikilizaji kwa ajili ya Kutegi
-                    li.addEventListener('click', () => {
-                        tagUser(username);
-                    });
-
-                    onlineUsersList.appendChild(li);
-                });
-                
-                onlineUsersCount.textContent = `(${count})`;
-            });
-        }
-
-        // Kazi ya Kutegi
-        function tagUser(username) {
-            const tag = `@${username} `;
-            const input = messageInput;
-            const start = input.selectionStart;
-            const end = input.selectionEnd;
-
-            // Ingiza tegi kwenye sehemu ya kishika
-            input.value = input.value.substring(0, start) + tag + input.value.substring(end);
-            
-            // Rudisha kishika mwisho wa tegi
-            input.selectionStart = input.selectionEnd = start + tag.length;
-            input.focus();
-            
-            // Funga menyu baada ya kutegi
-            onlineUsersBox.classList.remove('open');
-            menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-        }
-
-        // Kichupo cha Menyu
-        menuToggle.addEventListener('click', () => {
-            onlineUsersBox.classList.toggle('open');
-            // Badilisha aikon
-            if (onlineUsersBox.classList.contains('open')) {
-                menuToggle.innerHTML = '<i class="fas fa-times"></i>';
-            } else {
-                menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-            }
-        });
-
-        // ANZA: Hakiki jina la mtumiaji mara tu ukurasa unapopakiwa
+        
+        // ANZA: Fanya ukaguzi wa jina la mtumiaji mara tu ukurasa unapofunguliwa
         checkUsername();
 
     </script>
 </body>
-    </html>
+</html>
