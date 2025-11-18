@@ -6,300 +6,125 @@
     <title>DarkX Official: Secret Chatting Box</title>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=VT323&display=swap');
-
-        :root {
-            --neon-green: #00FF41;
-            --neon-green-glow: #00FF41;
-            --neon-blue: #00D9FF;
-            --neon-blue-glow: #00D9FF;
-            --neon-purple: #B026FF;
-            --neon-purple-glow: #B026FF;
-            --dark-bg: #0A0A0A;
-            --darker-bg: #050505;
-            --panel-bg: rgba(10, 10, 10, 0.8);
-            --text-color: #E0E0E0;
-            --accent-orange: #FF9900;
-            --accent-orange-glow: #FF9900;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
         body {
-            background: linear-gradient(135deg, var(--darker-bg) 0%, #111 100%);
-            color: var(--text-color);
-            font-family: 'Orbitron', sans-serif;
+            background-color: #000000;
+            color: #00FF41;
+            font-family: 'VT323', monospace;
             margin: 0;
             padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             min-height: 100vh;
-            overflow-x: hidden;
-            position: relative;
         }
-
-        /* Animated Background */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(0, 255, 65, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(0, 217, 255, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(176, 38, 255, 0.05) 0%, transparent 50%);
-            z-index: -1;
-        }
-
-        /* Matrix-like animated lines */
-        .matrix-lines {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            opacity: 0.1;
-            pointer-events: none;
-        }
-
-        .matrix-line {
-            position: absolute;
-            width: 2px;
-            height: 100px;
-            background: var(--neon-green);
-            opacity: 0;
-            animation: matrixFall linear infinite;
-        }
-
-        @keyframes matrixFall {
-            0% {
-                transform: translateY(-100px);
-                opacity: 0;
-            }
-            5% {
-                opacity: 1;
-            }
-            95% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(100vh);
-                opacity: 0;
-            }
-        }
-
+        
         h1 {
-            color: var(--neon-green);
-            text-shadow: 0 0 10px var(--neon-green-glow), 0 0 20px var(--neon-green-glow);
-            border-bottom: 2px solid var(--neon-green);
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-            font-size: 2.8em;
-            font-weight: 900;
-            letter-spacing: 2px;
+            color: #33FF33;
+            text-shadow: 0 0 10px #00FF41;
+            border-bottom: 2px solid #00FF41;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 2.5em;
             text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        h1::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
             width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--neon-green), transparent);
-            animation: pulseLine 3s infinite;
         }
-
-        @keyframes pulseLine {
-            0%, 100% {
-                opacity: 0.5;
-            }
-            50% {
-                opacity: 1;
-            }
-        }
-
+        
         #chat-container {
-            width: 90%;
-            max-width: 1000px;
-            background: var(--panel-bg);
-            border: 1px solid rgba(0, 255, 65, 0.3);
-            box-shadow: 0 0 30px rgba(0, 255, 65, 0.2);
-            padding: 25px;
-            border-radius: 12px;
-            backdrop-filter: blur(10px);
-            margin: 20px auto;
-            position: relative;
-            overflow: hidden;
-        }
-
-        #chat-container::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, var(--neon-green), var(--neon-blue), var(--neon-purple), var(--neon-green));
-            border-radius: 14px;
-            z-index: -1;
-            animation: borderRotate 10s linear infinite;
-        }
-
-        @keyframes borderRotate {
-            0% {
-                filter: hue-rotate(0deg);
-            }
-            100% {
-                filter: hue-rotate(360deg);
-            }
+            width: 95%;
+            max-width: 800px;
+            background-color: #0A0A0A;
+            border: 2px solid #00FF41;
+            box-shadow: 0 0 20px #00FF41;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            height: 90vh;
+            margin-top: 10px;
         }
 
         /* Box ya Ujumbe Uliotunzwa */
         #messages {
-            height: 450px;
-            overflow-y: scroll;
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid rgba(0, 255, 65, 0.2);
-            border-radius: 8px;
-            background: rgba(5, 5, 5, 0.7);
-            scrollbar-width: thin;
-            scrollbar-color: var(--neon-green) var(--darker-bg);
-        }
-
-        #messages::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        #messages::-webkit-scrollbar-track {
-            background: var(--darker-bg);
-            border-radius: 4px;
-        }
-
-        #messages::-webkit-scrollbar-thumb {
-            background: var(--neon-green);
-            border-radius: 4px;
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px dashed #008800;
+            display: flex;
+            flex-direction: column;
         }
 
         /* Muonekano wa Ujumbe Mmoja */
         .message {
-            margin-bottom: 15px;
-            padding: 12px;
-            border-radius: 8px;
-            background: rgba(20, 20, 20, 0.5);
-            transition: all 0.3s ease;
+            margin-bottom: 8px;
             word-wrap: break-word;
-            position: relative;
-            overflow: hidden;
+            padding: 5px 0;
         }
-
-        .message:hover {
-            background: rgba(30, 30, 30, 0.7);
-            transform: translateX(5px);
-        }
-
+        
         .username {
-            color: var(--neon-blue);
-            font-weight: 700;
-            text-shadow: 0 0 5px var(--neon-blue-glow);
-            display: inline-block;
-            margin-right: 8px;
-            font-size: 1.1em;
+            color: #FFFFFF;
+            font-weight: bold;
+            text-shadow: 0 0 5px #FFFFFF;
         }
-
+        
         .timestamp {
             font-size: 0.8em;
-            color: #777;
-            margin-right: 10px;
-            font-family: 'VT323', monospace;
+            color: #008800;
+            margin-right: 5px;
         }
         
         /* Muonekano wa user aliye-tag */
         .mention {
-            color: var(--accent-orange);
+            color: #FF9900;
             font-weight: bold;
-            text-shadow: 0 0 5px var(--accent-orange-glow);
-            background-color: rgba(255, 153, 0, 0.15);
-            padding: 2px 6px;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-        }
-        
-        .mention:hover {
-            background-color: rgba(255, 153, 0, 0.3);
-            transform: scale(1.05);
+            text-shadow: 0 0 5px #FF9900;
+            background-color: rgba(255, 153, 0, 0.1);
+            padding: 1px 4px;
+            border-radius: 3px;
         }
         
         /* Muonekano wa ujumbe ulio na mention */
         .mentioned {
-            border-left: 4px solid var(--accent-orange);
-            padding-left: 10px;
-            background-color: rgba(255, 153, 0, 0.1);
-            animation: pulseMention 2s infinite;
-        }
-
-        @keyframes pulseMention {
-            0%, 100% {
-                box-shadow: 0 0 5px rgba(255, 153, 0, 0.3);
-            }
-            50% {
-                box-shadow: 0 0 15px rgba(255, 153, 0, 0.5);
-            }
+            border-left: 3px solid #FF9900;
+            padding-left: 5px;
+            background-color: rgba(255, 153, 0, 0.05);
         }
 
         /* Sehemu ya Kuandika Ujumbe */
         #messageForm {
             display: flex;
             position: relative;
-            margin-top: 20px;
+            gap: 10px;
         }
         
         #messageInput {
             flex-grow: 1;
-            padding: 15px;
-            border: 1px solid rgba(0, 255, 65, 0.3);
-            background: rgba(10, 10, 10, 0.8);
-            color: var(--neon-green);
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.1em;
-            border-radius: 8px 0 0 8px;
-            transition: all 0.3s ease;
-            outline: none;
+            padding: 12px;
+            border: 1px solid #00FF41;
+            background-color: #000000;
+            color: #00FF41;
+            font-family: 'VT323', monospace;
+            font-size: 1.2em;
+            border-radius: 4px;
         }
-
-        #messageInput:focus {
-            border-color: var(--neon-green);
-            box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
-        }
-
+        
         #messageForm button {
-            padding: 15px 25px;
-            background: linear-gradient(135deg, var(--neon-green) 0%, #00CC33 100%);
-            color: #000;
+            padding: 12px 20px;
+            background-color: #008800;
+            color: #000000;
             border: none;
             cursor: pointer;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.1em;
-            font-weight: 700;
-            border-radius: 0 8px 8px 0;
-            transition: all 0.3s ease;
-            letter-spacing: 1px;
-            text-transform: uppercase;
+            font-family: 'VT323', monospace;
+            font-size: 1.2em;
+            transition: background-color 0.3s;
+            border-radius: 4px;
+            font-weight: bold;
         }
-
+        
         #messageForm button:hover {
-            background: linear-gradient(135deg, #00CC33 0%, var(--neon-green) 100%);
-            box-shadow: 0 0 15px rgba(0, 255, 65, 0.7);
-            transform: translateY(-2px);
+            background-color: #00FF41;
+            box-shadow: 0 0 10px #00FF41;
         }
         
         /* Box ya Kujaza Jina */
@@ -309,100 +134,63 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(5, 5, 5, 0.95);
+            background: rgba(0, 0, 0, 0.95);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 1000;
             flex-direction: column;
-            backdrop-filter: blur(10px);
         }
         
-        #username-prompt h1 {
-            margin-bottom: 40px;
-            font-size: 3em;
-            animation: titlePulse 2s infinite;
-        }
-
-        @keyframes titlePulse {
-            0%, 100% {
-                text-shadow: 0 0 10px var(--neon-green-glow), 0 0 20px var(--neon-green-glow);
-            }
-            50% {
-                text-shadow: 0 0 15px var(--neon-green-glow), 0 0 30px var(--neon-green-glow), 0 0 40px var(--neon-green-glow);
-            }
-        }
-        
-        #username-prompt input {
-            padding: 18px;
-            margin: 15px;
-            font-size: 1.3em;
-            background: rgba(10, 10, 10, 0.8);
-            color: var(--neon-green);
-            border: 1px solid var(--neon-green);
-            border-radius: 8px;
-            font-family: 'Orbitron', sans-serif;
-            width: 400px;
-            max-width: 80%;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        #username-prompt input:focus {
-            box-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
-            transform: scale(1.02);
+        #username-prompt input, #username-prompt button {
+            padding: 15px;
+            margin: 10px;
+            font-size: 1.5em;
+            background-color: #0A0A0A;
+            color: #00FF41;
+            border: 1px solid #00FF41;
+            font-family: 'VT323', monospace;
+            border-radius: 4px;
+            width: 80%;
+            max-width: 400px;
         }
         
         #username-prompt button {
-            padding: 18px 40px;
-            margin: 15px;
-            font-size: 1.3em;
-            background: linear-gradient(135deg, var(--neon-green) 0%, #00CC33 100%);
-            color: #000;
-            border: none;
-            border-radius: 8px;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 700;
+            background-color: #008800;
+            color: #000000;
             cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        #username-prompt button:hover {
-            background: linear-gradient(135deg, #00CC33 0%, var(--neon-green) 100%);
-            box-shadow: 0 0 20px rgba(0, 255, 65, 0.7);
-            transform: translateY(-3px);
+            font-weight: bold;
         }
         
+        #username-prompt button:hover {
+            background-color: #00FF41;
+        }
+
         /* Autocomplete ya user tagging */
         #userSuggestions {
             position: absolute;
             bottom: 100%;
             left: 0;
             width: 100%;
-            background: var(--panel-bg);
-            border: 1px solid var(--neon-green);
+            background-color: #0A0A0A;
+            border: 1px solid #00FF41;
             border-bottom: none;
-            border-radius: 8px 8px 0 0;
             max-height: 150px;
             overflow-y: auto;
             display: none;
             z-index: 10;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.5);
+            border-radius: 4px 4px 0 0;
         }
         
         .userSuggestion {
-            padding: 12px 15px;
+            padding: 8px 10px;
             cursor: pointer;
-            border-bottom: 1px solid rgba(0, 255, 65, 0.2);
-            transition: all 0.2s ease;
+            border-bottom: 1px solid #008800;
         }
         
         .userSuggestion:hover {
-            background-color: rgba(0, 255, 65, 0.1);
-            color: var(--neon-green);
+            background-color: #008800;
+            color: #000000;
         }
         
         /* Notification ya mention */
@@ -410,79 +198,49 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            background: linear-gradient(135deg, var(--accent-orange) 0%, #FF6600 100%);
-            color: #000;
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(255, 153, 0, 0.7);
+            background-color: #FF9900;
+            color: #000000;
+            padding: 10px 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px #FF9900;
             display: none;
             z-index: 1001;
             font-weight: bold;
-            animation: slideInRight 0.5s ease, pulse 2s infinite;
-            max-width: 300px;
-        }
-
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                box-shadow: 0 0 15px rgba(255, 153, 0, 0.7);
-            }
-            50% {
-                box-shadow: 0 0 25px rgba(255, 153, 0, 0.9);
-            }
         }
         
         /* Online users panel */
         #onlineUsers {
             position: fixed;
-            top: 80px;
+            top: 20px;
             left: 20px;
-            background: var(--panel-bg);
-            border: 1px solid var(--neon-blue);
-            padding: 15px;
-            width: 220px;
-            max-height: 350px;
+            background-color: #0A0A0A;
+            border: 1px solid #00FF41;
+            padding: 10px;
+            max-width: 200px;
+            max-height: 300px;
             overflow-y: auto;
             display: none;
-            border-radius: 8px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
-            z-index: 99;
+            border-radius: 4px;
+            box-shadow: 0 0 10px #00FF41;
         }
         
         #onlineUsers h3 {
             margin-top: 0;
-            border-bottom: 1px solid var(--neon-blue);
-            padding-bottom: 10px;
-            color: var(--neon-blue);
-            text-shadow: 0 0 5px var(--neon-blue-glow);
+            border-bottom: 1px solid #00FF41;
+            padding-bottom: 5px;
             text-align: center;
-            font-size: 1.2em;
         }
         
         .onlineUser {
-            padding: 8px 10px;
-            margin-bottom: 8px;
-            border-bottom: 1px dashed rgba(0, 217, 255, 0.3);
+            padding: 5px;
+            margin-bottom: 5px;
+            border-bottom: 1px dashed #008800;
             cursor: pointer;
-            transition: all 0.2s ease;
-            border-radius: 4px;
         }
         
         .onlineUser:hover {
-            background-color: rgba(0, 217, 255, 0.1);
-            color: var(--neon-blue);
-            transform: translateX(5px);
+            background-color: #008800;
+            color: #000000;
         }
         
         /* Toggle button for online users */
@@ -490,103 +248,42 @@
             position: fixed;
             top: 20px;
             left: 20px;
-            background: linear-gradient(135deg, var(--neon-blue) 0%, #0099CC 100%);
-            color: #000;
+            background-color: #008800;
+            color: #000000;
             border: none;
-            padding: 12px 18px;
-            cursor: pointer;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 700;
-            z-index: 100;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
-        }
-
-        #toggleUsersBtn:hover {
-            background: linear-gradient(135deg, #0099CC 0%, var(--neon-blue) 100%);
-            box-shadow: 0 0 15px rgba(0, 217, 255, 0.7);
-            transform: translateY(-2px);
-        }
-
-        /* Connection status indicator */
-        #connectionStatus {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
             padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            font-weight: 700;
-            z-index: 99;
-            background: rgba(10, 10, 10, 0.8);
-            border: 1px solid var(--neon-green);
-            color: var(--neon-green);
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            cursor: pointer;
+            font-family: 'VT323', monospace;
+            z-index: 100;
+            border-radius: 4px;
+            font-weight: bold;
         }
-
-        #connectionStatus::before {
-            content: '';
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--neon-green);
-            animation: pulse 2s infinite;
+        
+        #toggleUsersBtn:hover {
+            background-color: #00FF41;
+            box-shadow: 0 0 10px #00FF41;
         }
-
-        /* Responsive design */
-        @media (max-width: 768px) {
-            #chat-container {
-                width: 95%;
-                padding: 15px;
-            }
-            
-            #onlineUsers {
-                width: 200px;
-            }
-            
-            #username-prompt input {
-                width: 90%;
-            }
-            
-            h1 {
-                font-size: 2em;
-            }
+        
+        /* Scrollbar customization */
+        #messages::-webkit-scrollbar {
+            width: 8px;
         }
-
-        @media (max-width: 480px) {
-            #messageForm {
-                flex-direction: column;
-            }
-            
-            #messageInput {
-                border-radius: 8px 8px 0 0;
-            }
-            
-            #messageForm button {
-                border-radius: 0 0 8px 8px;
-            }
-            
-            #onlineUsers {
-                width: 180px;
-                left: 10px;
-            }
-            
-            #toggleUsersBtn {
-                left: 10px;
-                padding: 10px 15px;
-                font-size: 0.9em;
-            }
+        
+        #messages::-webkit-scrollbar-track {
+            background: #0A0A0A;
+        }
+        
+        #messages::-webkit-scrollbar-thumb {
+            background: #008800;
+            border-radius: 4px;
+        }
+        
+        #messages::-webkit-scrollbar-thumb:hover {
+            background: #00FF41;
         }
     </style>
 </head>
 <body>
-
-    <div class="matrix-lines" id="matrixLines"></div>
 
     <div id="username-prompt">
         <h1>ACCESS DENIED: IDENTIFY SELF</h1>
@@ -610,8 +307,6 @@
             <button type="submit">TRANSMIT</button>
         </form>
     </div>
-
-    <div id="connectionStatus">CONNECTED</div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -651,7 +346,6 @@
         const mentionNotification = document.getElementById('mentionNotification');
         const onlineUsersContainer = document.getElementById('onlineUsers');
         const toggleUsersBtn = document.getElementById('toggleUsersBtn');
-        const matrixLinesContainer = document.getElementById('matrixLines');
 
         // -------------------------------------------------------------------------
         // A. KAZI YA JINA LA MTUMIAJI
@@ -916,25 +610,6 @@
                 onlineUsersContainer.style.display = 'none';
             }
         });
-        
-        // -------------------------------------------------------------------------
-        // D. VISUAL EFFECTS
-        // -------------------------------------------------------------------------
-        
-        // Create matrix-like falling lines
-        function createMatrixLines() {
-            for (let i = 0; i < 50; i++) {
-                const line = document.createElement('div');
-                line.classList.add('matrix-line');
-                line.style.left = `${Math.random() * 100}%`;
-                line.style.animationDuration = `${Math.random() * 5 + 3}s`;
-                line.style.animationDelay = `${Math.random() * 5}s`;
-                matrixLinesContainer.appendChild(line);
-            }
-        }
-        
-        // Initialize matrix lines
-        createMatrixLines();
         
         // ANZA: Fanya ukaguzi wa jina la mtumiaji mara tu ukurasa unapofunguliwa
         checkUsername();
